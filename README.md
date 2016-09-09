@@ -1,2 +1,2 @@
 # GitFashion
-Generic Core stuff to support developing of other applications
+GenericCore is a collection of stuff to support developing of other applications.
