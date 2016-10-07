@@ -3,38 +3,46 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.Support
 {
-    public static class CommonExtensionMethods
+    public static class CollectionsExtensionMethods
     {
-        public static bool IsNull(this object o)
+        public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
         {
-            return ReferenceEquals(o, null);
+            if (list.IsNull())
+            {
+                return null;
+            }
+
+            return
+                list
+                    .ToList()
+                    .AsReadOnly();
         }
 
-        public static bool IsNotNull(this object o)
+        public static IDictionary<TKey, TValue> Find<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IList<TKey> keyList)
         {
-            return !o.IsNull();
-        }
+            dictionary.AssertNotNull("dictionary");
+            keyList.AssertNotNull("keyList");
 
-        public static bool IsNullOrEmpty(this string s)
-        {
-            return string.IsNullOrEmpty(s);
+            IList<KeyValuePair<TKey, TValue>> resultList = new List<KeyValuePair<TKey, TValue>>();
+
+            foreach (KeyValuePair<TKey, TValue> item in dictionary)
+            {
+                if (keyList.Contains(item.Key))
+                {
+                    resultList.Add(item);
+                    //keyList.Remove(item.Key); for optimization
+                }
+            }
+
+            return resultList.ToDictionary(x => x.Key, x => x.Value);
         }
 
         public static bool IsNullOrEmptyList<T>(this IList<T> list)
         {
             return list.IsNull() || list.Count == 0;
-        }
-
-        public static void AssertNotNull(this object o, string varName)
-        {
-            if (o.IsNull())
-            {
-                throw new ArgumentNullException(varName);
-            }
         }
 
         public static IEnumerable<T> ToEmptyIfNull<T>(this IEnumerable<T> enumerable)
@@ -50,11 +58,6 @@ namespace GenericCore.Support
         public static T[] ToEmptyArrayIfNull<T>(this IEnumerable<T> enumerable)
         {
             return enumerable.ToEmptyIfNull().ToArray();
-        }
-
-        public static bool IsNullOrBlankString(this string str)
-        {
-            return str.IsNull() || str == string.Empty;
         }
 
         public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action)
@@ -83,34 +86,6 @@ namespace GenericCore.Support
                 action(item, index);
                 ++index;
             }
-        }
-
-        public static string ToSafeString(this object item, string nullValueReplacement = "")
-        {
-            if (item == null)
-            {
-                return nullValueReplacement;
-            }
-
-            return item.ToString();
-        }
-
-        public static string FormatWith(this string format, params object[] args)
-        {
-            return format.IsNullOrEmpty() ? string.Empty : string.Format(format, args);
-        }
-
-        public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
-        {
-            if(list.IsNull())
-            {
-                return null;
-            }
-
-            return 
-                list
-                    .ToList()
-                    .AsReadOnly();
         }
     }
 }

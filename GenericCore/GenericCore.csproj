@@ -46,9 +46,11 @@
   <ItemGroup>
     <Compile Include="Compression\Zip\Zipper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Support\CommonExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\StringsExtensionMethods.cs" />
     <Compile Include="Support\KeysManager.cs" />
-	<Compile Include="Trees\Common\ITreeNode.cs" />
+    <Compile Include="Trees\Common\ITreeNode.cs" />
     <Compile Include="Trees\Common\Node.cs" />
     <Compile Include="Trees\Common\Tree.cs" />
     <Compile Include="UI\ComboItem.cs" />
