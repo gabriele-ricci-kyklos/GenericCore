@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace GenericCore.Support
         public static bool IsNullOrEmpty(this string s)
         {
             return string.IsNullOrEmpty(s);
+        }
+
+        public static bool IsNullOrEmptyList<T>(this IList<T> list)
+        {
+            return list.IsNull() || list.Count == 0;
         }
 
         public static void AssertNotNull(this object o, string varName)
@@ -79,18 +85,32 @@ namespace GenericCore.Support
             }
         }
 
-        public static string ToSafeString(this object item, string nullValueReplace = "")
+        public static string ToSafeString(this object item, string nullValueReplacement = "")
         {
             if (item == null)
             {
-                return nullValueReplace;
+                return nullValueReplacement;
             }
+
             return item.ToString();
         }
 
         public static string FormatWith(this string format, params object[] args)
         {
             return format.IsNullOrEmpty() ? string.Empty : string.Format(format, args);
+        }
+
+        public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
+        {
+            if(list.IsNull())
+            {
+                return null;
+            }
+
+            return 
+                list
+                    .ToList()
+                    .AsReadOnly();
         }
     }
 }
