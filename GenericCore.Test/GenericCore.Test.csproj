@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="CollectionExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringsExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenericCore\GenericCore.csproj">

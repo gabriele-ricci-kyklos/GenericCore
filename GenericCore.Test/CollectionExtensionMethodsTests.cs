@@ -73,6 +73,24 @@ namespace GenericCore.Test
             Assert.IsNotNull(tupleList);
             Assert.IsTrue(tupleList.Count == list.Count);
         }
+
+        [TestMethod]
+        public void TestSelectFirst()
+        {
+            IList<Item> list = GenerateTestList();
+            string firstCode = list.SelectFirst(x => x.Code);
+            Assert.IsNotNull(firstCode);
+            Assert.IsTrue(firstCode == list.First().Code);
+        }
+
+        [TestMethod]
+        public void TestSelectLast()
+        {
+            IList<Item> list = GenerateTestList();
+            string lastCode = list.SelectLast(x => x.Code);
+            Assert.IsNotNull(lastCode);
+            Assert.IsTrue(lastCode == list.Last().Code);
+        }
     }
 
     public static class CollectionExtensionMethodsTestsExtMethods
