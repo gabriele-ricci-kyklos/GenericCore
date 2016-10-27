@@ -131,30 +131,12 @@ namespace GenericCore.Support
             return source.Select(selector).FirstOrDefault();
         }
 
-        public static TResult SelectFirst<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Func<TResult, bool> predicate)
-        {
-            source.AssertNotNull("source");
-            selector.AssertNotNull("selector");
-            predicate.AssertNotNull("predicate");
-
-            return source.Select(selector).FirstOrDefault(predicate);
-        }
-
         public static TResult SelectLast<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
             source.AssertNotNull("source");
             selector.AssertNotNull("selector");
 
             return source.Select(selector).LastOrDefault();
-        }
-
-        public static TResult SelectLast<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Func<TResult, bool> predicate)
-        {
-            source.AssertNotNull("source");
-            selector.AssertNotNull("selector");
-            predicate.AssertNotNull("predicate");
-
-            return source.Select(selector).LastOrDefault(predicate);
         }
     }
 }
