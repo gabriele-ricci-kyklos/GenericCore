@@ -5,7 +5,7 @@ using System.Text;
 using GenericCore.Support;
 using System.Collections.ObjectModel;
 
-namespace GenericCore.Trees.Common
+namespace GenericCore.Collections.Trees
 {
     public class Node<T> : ITreeNode<T>
     {

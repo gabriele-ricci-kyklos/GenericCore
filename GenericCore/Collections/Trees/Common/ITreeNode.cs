@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GenericCore.Trees.Common
+namespace GenericCore.Collections.Trees
 {
     public interface ITreeNode<T>
     {

@@ -50,11 +50,11 @@
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethods.cs" />
     <Compile Include="Support\KeysManager.cs" />
-    <Compile Include="Trees\Common\ITreeNode.cs" />
-    <Compile Include="Trees\Common\Node.cs" />
-    <Compile Include="Trees\Common\Tree.cs" />
+    <Compile Include="Collections\Trees\Common\ITreeNode.cs" />
+    <Compile Include="Collections\Trees\Common\Node.cs" />
+    <Compile Include="Collections\Trees\Common\Tree.cs" />
     <Compile Include="UI\ComboItem.cs" />
-    <Compile Include="Support\UI\UIExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

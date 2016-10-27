@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GenericCore.Trees.Common
+namespace GenericCore.Collections.Trees
 {
-    public class Tree<T>
+    public abstract class Tree<T>
     {
         private Node<T> _root;
 

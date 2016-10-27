@@ -33,7 +33,6 @@ namespace GenericCore.Support
                 if (keyList.Contains(item.Key))
                 {
                     resultList.Add(item);
-                    //keyList.Remove(item.Key); for optimization
                 }
             }
 
@@ -86,6 +85,76 @@ namespace GenericCore.Support
                 action(item, index);
                 ++index;
             }
+        }
+
+        public static IList<Tuple<TResult>> ToTupleList<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            source.AssertNotNull("source");
+            selector.AssertNotNull("selector");
+
+            return 
+                source
+                    .Select(x => new Tuple<TResult>(selector(x)))
+                    .ToList();
+        }
+
+        public static IList<Tuple<T1, T2>> ToTupleList<TSource, T1, T2>(this IEnumerable<TSource> source, Func<TSource, T1> selector1, Func<TSource, T2> selector2)
+        {
+            source.AssertNotNull("source");
+            selector1.AssertNotNull("selector1");
+            selector2.AssertNotNull("selector2");
+
+            return 
+                source
+                    .Select(x => new Tuple<T1, T2>(selector1(x), selector2(x)))
+                    .ToList();
+        }
+
+        public static IList<Tuple<T1, T2, T3>> ToTupleList<TSource, T1, T2, T3>(this IEnumerable<TSource> source, Func<TSource, T1> selector1, Func<TSource, T2> selector2, Func<TSource, T3> selector3)
+        {
+            source.AssertNotNull("source");
+            selector1.AssertNotNull("selector1");
+            selector2.AssertNotNull("selector2");
+            selector3.AssertNotNull("selector3");
+
+            return
+                source
+                    .Select(x => new Tuple<T1, T2, T3>(selector1(x), selector2(x), selector3(x)))
+                    .ToList();
+        }
+
+        public static TResult SelectFirst<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            source.AssertNotNull("source");
+            selector.AssertNotNull("selector");
+
+            return source.Select(selector).FirstOrDefault();
+        }
+
+        public static TResult SelectFirst<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Func<TResult, bool> predicate)
+        {
+            source.AssertNotNull("source");
+            selector.AssertNotNull("selector");
+            predicate.AssertNotNull("predicate");
+
+            return source.Select(selector).FirstOrDefault(predicate);
+        }
+
+        public static TResult SelectLast<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
+        {
+            source.AssertNotNull("source");
+            selector.AssertNotNull("selector");
+
+            return source.Select(selector).LastOrDefault();
+        }
+
+        public static TResult SelectLast<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Func<TResult, bool> predicate)
+        {
+            source.AssertNotNull("source");
+            selector.AssertNotNull("selector");
+            predicate.AssertNotNull("predicate");
+
+            return source.Select(selector).LastOrDefault(predicate);
         }
     }
 }

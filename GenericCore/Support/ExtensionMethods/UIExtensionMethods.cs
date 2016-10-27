@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace GenericCore.Support.UI
+namespace GenericCore.Support
 {
     public static class UIExtensionMethods
     {
