@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
+    <Compile Include="Exceptions\ReadOnlyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
