@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GenericCore.Collections.Dictionaries;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -137,6 +138,72 @@ namespace GenericCore.Support
             selector.AssertNotNull("selector");
 
             return source.Select(selector).LastOrDefault();
+        }
+
+        public static bool IsIn<T>(this T item, params T[] list)
+        {
+            return IsIn(item, list.AsEnumerable());
+        }
+
+        public static bool IsIn<T>(this T item, Func<T, T, bool> eqFx, params T[] list)
+        {
+            return IsIn(item, list.AsEnumerable(), eqFx);
+        }
+
+        public static bool IsIn<T>(this T item, IEnumerable<T> list)
+        {
+            return IsIn(item, list, (x, y) => x.Equals(y));
+        }
+
+        public static bool IsIn<T>(this T item, IEnumerable<T> enumerablesList, Func<T, T, bool> eqFx)
+        {
+            if (((object)item) == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+
+            if (eqFx == null)
+            {
+                throw new ArgumentNullException("eqFx");
+            }
+
+            var list = enumerablesList.ToList();
+            if (list.Return(x => x.Count, 0) == 0)
+            {
+                return false;
+            }
+
+            return list.Any(listItem => eqFx(item, listItem));
+        }
+
+        public static IList<T> AsList<T>(this T s, int size = 1)
+        {
+            return s.AsArray(size).ToList();
+        }
+
+        public static T[] AsArray<T>(this T item, int size = 1)
+        {
+            T[] array = new T[size];
+            for (int i = 0; i < size; ++i)
+            {
+                array[i] = item;
+            }
+            return array;
+        }
+
+        public static T[] AsArrayOrNull<T>(this T item, int size = 1)
+        {
+            return item.IsNull() ? null : item.AsArray(size);
+        }
+
+        public static IList<T> AsListOrNull<T>(this T item, int size = 1)
+        {
+            return item.IsNull() ? null : item.AsList(size);
+        }
+
+        public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            return new ReadOnlyDictionary<TKey, TValue>(dictionary);
         }
     }
 }
