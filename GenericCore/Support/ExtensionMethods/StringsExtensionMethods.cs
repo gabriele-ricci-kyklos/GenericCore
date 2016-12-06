@@ -36,5 +36,10 @@ namespace GenericCore.Support
 
             return "{0}{1}{2}".FormatWith(str, separator, str2);
         }
+
+        public static string StringJoin(this IEnumerable<string> values, string separator)
+        {
+            return string.Join(separator, values);
+        }
     }
 }

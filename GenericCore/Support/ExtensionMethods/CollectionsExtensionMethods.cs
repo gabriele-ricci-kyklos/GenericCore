@@ -93,7 +93,7 @@ namespace GenericCore.Support
             source.AssertNotNull("source");
             selector.AssertNotNull("selector");
 
-            return 
+            return
                 source
                     .Select(x => new Tuple<TResult>(selector(x)))
                     .ToList();
@@ -105,7 +105,7 @@ namespace GenericCore.Support
             selector1.AssertNotNull("selector1");
             selector2.AssertNotNull("selector2");
 
-            return 
+            return
                 source
                     .Select(x => new Tuple<T1, T2>(selector1(x), selector2(x)))
                     .ToList();
@@ -204,6 +204,23 @@ namespace GenericCore.Support
         public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
             return new ReadOnlyDictionary<TKey, TValue>(dictionary);
+        }
+
+        public static bool IsNullOrEmptyList<T>(this IEnumerable<T> list)
+        {
+            return (list == null || list.Count() == 0);
+        }
+
+        public static IDictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
+        {
+            itemList.AssertNotNull("itemList");
+
+            if (itemList.IsNullOrEmptyList())
+            {
+                return new Dictionary<TKey, TResult>();
+            }
+
+            return itemList.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

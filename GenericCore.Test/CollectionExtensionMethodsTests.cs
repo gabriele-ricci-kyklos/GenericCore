@@ -91,6 +91,18 @@ namespace GenericCore.Test
             Assert.IsNotNull(lastCode);
             Assert.IsTrue(lastCode == list.Last().Code);
         }
+
+        [TestMethod]
+        public void TestToDictionary()
+        {
+            var list = GenerateTestList();
+            var dict = 
+                list
+                    .Select(x => new KeyValuePair<long, string>(x.Id, x.Code))
+                    .ToDictionary();
+
+            Assert.IsInstanceOfType(dict, typeof(IDictionary<long, string>));
+        }
     }
 
     public static class CollectionExtensionMethodsTestsExtMethods
