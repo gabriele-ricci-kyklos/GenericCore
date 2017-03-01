@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace GenericCore.Support
 {
@@ -50,6 +52,23 @@ namespace GenericCore.Support
                     where TInput : struct
         {
             return !o.HasValue ? failureValue : evaluator(o.Value);
+        }
+
+        public static string XmlSerialize<T>(this T value)
+        {
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(T));
+            var xml = string.Empty;
+
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww))
+                {
+                    xsSubmit.Serialize(writer, value);
+                    xml = sww.ToString();
+                }
+            }
+
+            return xml;
         }
     }
 }
