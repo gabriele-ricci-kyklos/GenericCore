@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
-    <Compile Include="Encoding\Hashing.cs" />
+    <Compile Include="Cryptography\Hashing.cs" />
     <Compile Include="Exceptions\ReadOnlyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
