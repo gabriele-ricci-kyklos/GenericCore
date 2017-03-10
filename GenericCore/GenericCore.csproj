@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
+    <Compile Include="Cryptography\GenericEncryption.cs" />
     <Compile Include="Cryptography\Hashing.cs" />
     <Compile Include="Exceptions\ReadOnlyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Collections\Trees\Common\ITreeNode.cs" />
     <Compile Include="Collections\Trees\Common\Node.cs" />
     <Compile Include="Collections\Trees\Common\Tree.cs" />
+    <Compile Include="Support\Strings\BinaryString.cs" />
     <Compile Include="UI\ComboItem.cs" />
     <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
   </ItemGroup>

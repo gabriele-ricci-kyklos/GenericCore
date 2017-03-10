@@ -21,11 +21,6 @@ namespace GenericCore.Support
             return !o.IsNull();
         }
 
-        public static bool IsNullOrEmpty(this string s)
-        {
-            return string.IsNullOrEmpty(s);
-        }
-
         public static void AssertNotNull(this object o, string varName)
         {
             if (o.IsNull())

@@ -41,5 +41,15 @@ namespace GenericCore.Support
         {
             return string.Join(separator, values);
         }
+
+        public static bool IsNullOrEmpty(this string s)
+        {
+            return string.IsNullOrEmpty(s);
+        }
+
+        public static string ToEmptyIfNull(this string s)
+        {
+            return s.IsNullOrEmpty() ? string.Empty : s;
+        }
     }
 }
