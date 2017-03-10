@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GenericCore.Support;
 
-namespace GenericCore.Test
+namespace GenericCore.Test.Support.ExtensionMethods
 {
     [TestClass]
     public class StringsExtensionMethodsTests

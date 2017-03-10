@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GenericCore.Serialization.Xml;
 using GenericCore.Support;
 
-namespace GenericCore.Test
+namespace GenericCore.Test.Serialization
 {
     [TestClass]
     public class SerializationTests
