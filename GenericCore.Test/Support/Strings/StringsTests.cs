@@ -14,13 +14,13 @@ namespace GenericCore.Test.Support.Strings
         [TestMethod]
         public void BinaryStringTest()
         {
-            BinaryString str = new BinaryString("hello world");
-            BinaryString str2 = new BinaryString("hello world");
+            BinaryString str = BinaryString.FromString("hello world");
+            BinaryString str2 = BinaryString.FromString("hello world");
 
             Assert.AreEqual(str, str2);
             Assert.AreEqual("0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100", str.ToString());
 
-            BinaryString str3 = new BinaryString("a");
+            BinaryString str3 = BinaryString.FromString("a");
 
             Assert.AreEqual("01100001", str3.ToString());
 

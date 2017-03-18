@@ -25,7 +25,31 @@ namespace GenericCore.Support.Strings
             }
         }
 
-        public BinaryString(string str, Encoding encoding = null)
+        public static BinaryString FromString(string str, Encoding encoding = null)
+        {
+            return new BinaryString(str, encoding);
+        }
+
+        public static BinaryString FromByteArray(byte[] byteArray, Encoding encoding = null)
+        {
+            return new BinaryString(byteArray, encoding);
+        }
+
+        public static BinaryString FromBinaryString(string binaryString, Encoding encoding = null)
+        {
+            binaryString.AssertNotNull("binaryString");
+
+            if(binaryString.Any(x => x != '0' && x != '1'))
+            {
+                throw new ArgumentException("The provided string '{0}' is not a binary string".FormatWith(binaryString));
+            }
+
+            byte[] byteArray = GetByteArray(binaryString);
+
+            return new BinaryString(byteArray, encoding);
+        }
+
+        private BinaryString(string str, Encoding encoding = null)
         {
             str.AssertNotNull("str");
 
@@ -38,7 +62,7 @@ namespace GenericCore.Support.Strings
             Initialize(bytes, encoding);
         }
 
-        public BinaryString(byte[] byteArray, Encoding encoding = null)
+        private BinaryString(byte[] byteArray, Encoding encoding = null)
         {
             if (encoding.IsNull())
             {
@@ -146,7 +170,7 @@ namespace GenericCore.Support.Strings
             return binaryStr;
         }
 
-        private byte[] GetByteArray(string binaryStr)
+        private static byte[] GetByteArray(string binaryStr)
         {
             int numOfBytes = binaryStr.Length / 8;
             byte[] bytes = new byte[numOfBytes];
