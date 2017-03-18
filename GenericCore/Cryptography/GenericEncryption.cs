@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GenericCore.Support.Strings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,14 +44,14 @@ namespace GenericCore.Cryptography
         private string Encode()
         {
             byte[] bytes = Encoding.UTF8.GetBytes(String);
-            string binaryStr = GetBinaryString(bytes);
-            string invertedBinaryStr = InvertBinaries(binaryStr);
-            string reversedBinaryStr = ReverseBinaries(invertedBinaryStr);
+            BinaryString binaryStr = BinaryString.FromString(String, Encoding.UTF8);
+            BinaryString invertedBinaryStr = binaryStr.InvertBinaries();
+            BinaryString reversedBinaryStr = invertedBinaryStr.ReverseBinaries();
 
             StringBuilder buffer = new StringBuilder();
             int index;
 
-            foreach (char c in reversedBinaryStr)
+            foreach (char c in reversedBinaryStr.ToString())
             {
                 if (c == '0')
                 {
@@ -93,12 +94,11 @@ namespace GenericCore.Cryptography
                 }
             }
 
-            string binaryStr = buffer.ToString();
-            string reversedBinaryStr = ReverseBinaries(binaryStr);
-            string invertedBinaryStr = InvertBinaries(reversedBinaryStr);
+            BinaryString binaryStr = BinaryString.FromBinaryString(buffer.ToString());
+            BinaryString reversedBinaryStr = binaryStr.ReverseBinaries();
+            BinaryString invertedBinaryStr = reversedBinaryStr.InvertBinaries();
 
-            byte[] bytes = GetByteArray(invertedBinaryStr);
-            return Encoding.UTF8.GetString(bytes);
+            return invertedBinaryStr.OriginalString;
         }
 
         private string GetBinaryString(byte[] bytes)
