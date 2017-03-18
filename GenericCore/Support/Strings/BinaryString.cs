@@ -7,15 +7,74 @@ namespace GenericCore.Support.Strings
 {
     public class BinaryString
     {
-        private Lazy<string> _binaryString;
+        private string _separator;
+        private Encoding _encoding;
+        private Lazy<IEnumerable<string>> _binaryString;
         
-        public string OriginalString { get; set; }
-
-        public BinaryString(string str)
+        public byte[] Bytes { get; set; }
+        public string OriginalString
         {
-            OriginalString = str;
-            _binaryString = new Lazy<string>(() => ToBinaryString(OriginalString, string.Empty));
+            get
+            {
+                if(Bytes.IsNullOrEmptyList())
+                {
+                    return string.Empty;
+                }
+
+                return _encoding.GetString(Bytes);
+            }
         }
+
+        public BinaryString(string str, Encoding encoding = null)
+        {
+            str.AssertNotNull("str");
+
+            if (encoding.IsNull())
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            byte[] bytes = encoding.GetBytes(str);
+            Initialize(bytes, encoding);
+        }
+
+        public BinaryString(byte[] byteArray, Encoding encoding = null)
+        {
+            if (encoding.IsNull())
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            Initialize(byteArray, encoding);
+        }
+
+        public BinaryString InvertBinaries()
+        {
+            string binaryStr = ToString();
+            StringBuilder buffer = new StringBuilder();
+
+            foreach (char c in binaryStr)
+            {
+                buffer.Append((c == '1') ? '0' : '1');
+            }
+
+            string invertedBinaryStr = buffer.ToString();
+            byte[] bytes = GetByteArray(invertedBinaryStr);
+
+            return new BinaryString(bytes);
+        }
+
+        public BinaryString ReverseBinaries()
+        {
+            string binaryStr = ToString();
+            string[] strArray = binaryStr.ToCharArray().Select(x => x.ToString()).ToArray();
+            Array.Reverse(strArray);
+            byte[] bytes = GetByteArray(strArray.StringJoin(string.Empty));
+
+            return new BinaryString(bytes);
+        }
+
+        #region Object override
 
         public override bool Equals(object obj)
         {
@@ -40,31 +99,66 @@ namespace GenericCore.Support.Strings
 
         public override string ToString()
         {
-            return _binaryString.Value;
+            return ToString(string.Empty);
         }
 
-        private string ToBinaryString(string str, string separator)
+        public string ToString(string separator)
         {
-            separator = separator.ToEmptyIfNull();
+            return 
+                _binaryString
+                .Value
+                .ToEmptyIfNull()
+                .StringJoin(separator.ToEmptyIfNull());
+        }
 
-            if (str.IsNullOrEmpty())
+        #endregion
+
+        #region Private Methods
+
+        private void Initialize(byte[] byteArray, Encoding encoding)
+        {
+            byteArray.AssertNotNull("byteArray");
+
+            Bytes = byteArray;
+
+            _encoding = encoding;
+            _binaryString = new Lazy<IEnumerable<string>>(() => ToBinaryString());
+            _separator = string.Empty;
+        }
+
+        private IEnumerable<string> ToBinaryString()
+        {
+            if (Bytes.IsNullOrEmptyList())
             {
-                return string.Empty;
+                return new string[0];
             }
 
-            byte[] bytes = Encoding.UTF8.GetBytes(str);
-            string binaryStr =
-                bytes
+            IEnumerable<string> binaryStr =
+                Bytes
                     .Select
                     (
                         x =>
                             Convert
                                 .ToString(x, 2)
                                 .PadLeft(8, '0')
-                    )
-                    .StringJoin(separator);
+                    );
 
             return binaryStr;
         }
+
+        private byte[] GetByteArray(string binaryStr)
+        {
+            int numOfBytes = binaryStr.Length / 8;
+            byte[] bytes = new byte[numOfBytes];
+
+            for (int i = 0; i < numOfBytes; ++i)
+            {
+                bytes[i] = Convert.ToByte(binaryStr.Substring(8 * i, 8), 2);
+            }
+
+            return bytes;
+        }
+
+        #endregion
     }
 }
