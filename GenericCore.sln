@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore", "GenericCore\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore.Test", "GenericCore.Test\GenericCore.Test.csproj", "{826F2E5E-A703-4EC6-87B1-F4A7F313C023}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore.StateMachine", "GenericCore.StateMachine\GenericCore.StateMachine.csproj", "{589E710F-9320-43F5-8306-EBB4012EF403}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{826F2E5E-A703-4EC6-87B1-F4A7F313C023}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{826F2E5E-A703-4EC6-87B1-F4A7F313C023}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{826F2E5E-A703-4EC6-87B1-F4A7F313C023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589E710F-9320-43F5-8306-EBB4012EF403}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589E710F-9320-43F5-8306-EBB4012EF403}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589E710F-9320-43F5-8306-EBB4012EF403}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589E710F-9320-43F5-8306-EBB4012EF403}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

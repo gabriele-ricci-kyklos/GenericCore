@@ -53,6 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Cryptography\CryptographyTests.cs" />
+    <Compile Include="StateMachine\StateMachineTests.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethodsTests.cs" />
@@ -60,6 +61,10 @@
     <Compile Include="Support\Strings\StringsTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GenericCore.StateMachine\GenericCore.StateMachine.csproj">
+      <Project>{589e710f-9320-43f5-8306-ebb4012ef403}</Project>
+      <Name>GenericCore.StateMachine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GenericCore\GenericCore.csproj">
       <Project>{6feaabc8-4927-4364-b1b0-05b72ec95a5a}</Project>
       <Name>GenericCore</Name>
