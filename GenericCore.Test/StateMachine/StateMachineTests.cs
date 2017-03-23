@@ -53,5 +53,43 @@ namespace GenericCore.Test.StateMachine
             machine.GoToState(States.G);
             machine.GoToState(States.B);
         }
+
+        [TestMethod]
+        public void BasicTestWithFluentInterface()
+        {
+            StateMachineBuilder<States> builder =
+                StateMachineBuilder<States>
+                    .New()
+                    .State(States.R)
+                    .State(States.G)
+                    .State(States.B)
+
+                    .Transition(States.R, States.G)
+                    .Transition(States.R, States.B)
+                    .Transition(States.G, States.R)
+                    .Transition(States.G, States.B)
+                    .Transition(States.B, States.R)
+                    .Transition(States.B, States.G)
+
+                    .Entering(States.R, (state) => Assert.AreEqual(States.R, state.Name))
+                    .Entering(States.G, (state) => Assert.AreEqual(States.G, state.Name))
+                    .Entering(States.B, (state) => Assert.AreEqual(States.B, state.Name))
+
+                    .Exiting(States.R, (state) => Assert.AreEqual(States.R, state.Name))
+                    .Exiting(States.G, (state) => Assert.AreEqual(States.G, state.Name))
+                    .Exiting(States.B, (state) => Assert.AreEqual(States.B, state.Name))
+
+                    .GoingTo(States.R, States.G, (from, to) => { Assert.AreEqual(States.R, from.Name); Assert.AreEqual(States.G, to.Name); })
+                    .GoingTo(States.R, States.B, (from, to) => { Assert.AreEqual(States.R, from.Name); Assert.AreEqual(States.B, to.Name); })
+                    .GoingTo(States.G, States.R, (from, to) => { Assert.AreEqual(States.G, from.Name); Assert.AreEqual(States.R, to.Name); })
+                    .GoingTo(States.G, States.B, (from, to) => { Assert.AreEqual(States.G, from.Name); Assert.AreEqual(States.B, to.Name); })
+                    .GoingTo(States.B, States.R, (from, to) => { Assert.AreEqual(States.B, from.Name); Assert.AreEqual(States.R, to.Name); })
+                    .GoingTo(States.B, States.G, (from, to) => { Assert.AreEqual(States.B, from.Name); Assert.AreEqual(States.G, to.Name); })
+                ;
+
+            builder.GoToState(States.R);
+            builder.GoToState(States.G);
+            builder.GoToState(States.B);
+        }
     }
 }
