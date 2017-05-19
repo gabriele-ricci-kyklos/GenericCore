@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using GenericCore.StateMachine;
+﻿using GenericCore.StateMachine;
 using GenericCore.StateMachine.EventArgs;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace GenericCore.Test.StateMachine
 {
@@ -85,6 +85,9 @@ namespace GenericCore.Test.StateMachine
                     .GoingTo(States.G, States.B, (from, to) => { Assert.AreEqual(States.G, from.Name); Assert.AreEqual(States.B, to.Name); })
                     .GoingTo(States.B, States.R, (from, to) => { Assert.AreEqual(States.B, from.Name); Assert.AreEqual(States.R, to.Name); })
                     .GoingTo(States.B, States.G, (from, to) => { Assert.AreEqual(States.B, from.Name); Assert.AreEqual(States.G, to.Name); })
+
+                    .OnTransiting((obj, e) => Assert.IsTrue((obj as StateMachine<States>).IsTransiting))
+                    .OnTransited((obj, e) => Assert.IsFalse((obj as StateMachine<States>).IsTransiting))
                 ;
 
             builder.GoToState(States.R);

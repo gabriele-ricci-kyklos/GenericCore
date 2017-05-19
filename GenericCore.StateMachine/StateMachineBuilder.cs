@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GenericCore.StateMachine.EventArgs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,6 +53,18 @@ namespace GenericCore.StateMachine
         public void GoToState(TState state)
         {
             _stateMachine.GoToState(state);
+        }
+
+        public StateMachineBuilder<TState> OnTransiting(Action<object, TransitingEventArgs<TState>> target)
+        {
+            _stateMachine.Transiting += new EventHandler<TransitingEventArgs<TState>>(target);
+            return this;
+        }
+
+        public StateMachineBuilder<TState> OnTransited(Action<object, TransitedEventArgs<TState>> target)
+        {
+            _stateMachine.Transited += new EventHandler<TransitedEventArgs<TState>>(target);
+            return this;
         }
     }
 }
