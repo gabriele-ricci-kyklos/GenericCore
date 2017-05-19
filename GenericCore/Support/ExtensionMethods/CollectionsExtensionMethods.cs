@@ -1,4 +1,5 @@
 ﻿using GenericCore.Collections.Dictionaries;
+using GenericCore.Support.Collections;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,7 +12,7 @@ namespace GenericCore.Support
     {
         public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
         {
-            if (list.IsNull())
+            if (list.IsNullOrEmptyList())
             {
                 return null;
             }
@@ -62,7 +63,7 @@ namespace GenericCore.Support
 
         public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action)
         {
-            if (sequence == null)
+            if (sequence.IsNullOrEmptyList())
             {
                 return;
             }
@@ -75,7 +76,7 @@ namespace GenericCore.Support
 
         public static void ForEach<T>(this IEnumerable<T> sequence, Action<T, int> action)
         {
-            if (sequence == null)
+            if (sequence.IsNullOrEmptyList())
             {
                 return;
             }
@@ -157,23 +158,15 @@ namespace GenericCore.Support
 
         public static bool IsIn<T>(this T item, IEnumerable<T> enumerablesList, Func<T, T, bool> eqFx)
         {
-            if (((object)item) == null)
-            {
-                throw new ArgumentNullException("item");
-            }
+            item.AssertNotNull("item");
+            eqFx.AssertNotNull("eqFx");
 
-            if (eqFx == null)
-            {
-                throw new ArgumentNullException("eqFx");
-            }
-
-            var list = enumerablesList.ToList();
-            if (list.Return(x => x.Count, 0) == 0)
+            if (enumerablesList.IsNullOrEmptyList())
             {
                 return false;
             }
 
-            return list.Any(listItem => eqFx(item, listItem));
+            return enumerablesList.Any(listItem => eqFx(item, listItem));
         }
 
         public static IList<T> AsList<T>(this T s, int size = 1)
@@ -208,7 +201,7 @@ namespace GenericCore.Support
 
         public static bool IsNullOrEmptyList<T>(this IEnumerable<T> list)
         {
-            return (list == null || list.Count() == 0);
+            return (list.IsNull() || list.Count() == 0);
         }
 
         public static IDictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
@@ -221,6 +214,57 @@ namespace GenericCore.Support
             }
 
             return itemList.ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static IEnumerable<OuterLinQJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector)
+        {
+            return LeftJoin(outer, inner, outerKeySelector, innerKeySelector, EqualityComparer<TKey>.Default);
+        }
+
+        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinQJoinResult<TOuter, TInner>, TResult> resultSelector)
+        {
+            return
+                LeftJoin(outer, inner, outerKeySelector, innerKeySelector)
+                    .Select(x => resultSelector(x));
+        }
+
+        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinQJoinResult<TOuter, TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        {
+            return
+                LeftJoin(outer, inner, outerKeySelector, innerKeySelector, comparer)
+                    .Select(x => resultSelector(x));
+        }
+
+        public static IEnumerable<OuterLinQJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, IEqualityComparer<TKey> comparer)
+        {
+            inner.AssertNotNull("outer");
+            outer.AssertNotNull("outer");
+
+            return
+                outer
+                    .GroupJoin
+                    (
+                        inner,
+                        outerKeySelector,
+                        innerKeySelector,
+                        (x, y) => 
+                            new
+                            {
+                                LeftPart = x,
+                                RightPart = y
+                            },
+                        comparer
+                    )
+                    .SelectMany
+                    (
+                        x => x.RightPart.DefaultIfEmpty(),
+                        (x, y) => 
+                            new OuterLinQJoinResult<TOuter, TInner>
+                            {
+                                LeftPart = x.LeftPart,
+                                RightPart = y
+                            }
+                    );
         }
     }
 }
