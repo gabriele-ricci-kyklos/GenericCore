@@ -1,9 +1,13 @@
-﻿using System;
+﻿using GenericCore.Support;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace GenericCore.Serialization.Xml
@@ -24,7 +28,7 @@ namespace GenericCore.Serialization.Xml
             finally
             {
                 sw.Close();
-                if (tw != null)
+                if (tw.IsNotNull())
                 {
                     tw.Close();
                 }
@@ -63,17 +67,26 @@ namespace GenericCore.Serialization.Xml
             }
             finally
             {
-                if (xmlReader != null)
+                if (xmlReader.IsNotNull())
                 {
                     xmlReader.Close();
                 }
-                if (strReader != null)
+                if (strReader.IsNotNull())
                 {
                     strReader.Close();
                 }
             }
 
             return returnObj;
+        }
+
+        public static ExpandoObject GetDynamicObjectFromXml(string xmlString, bool includeDeclaration = false)
+        {
+            XDocument doc = XDocument.Parse(xmlString);
+            string jsonText = JsonConvert.SerializeXNode(doc.Root, Newtonsoft.Json.Formatting.None);
+            ExpandoObject obj = JsonConvert.DeserializeObject<ExpandoObject>(jsonText);
+
+            return obj;
         }
     }
 }
