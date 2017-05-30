@@ -10,7 +10,7 @@ namespace GenericCore.Support
 {
     public static class CollectionsExtensionMethods
     {
-        public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> list)
+        public static ReadOnlyCollection<T> AsReadOnly<T>(this IEnumerable<T> list)
         {
             if (list.IsNullOrEmptyList())
             {
