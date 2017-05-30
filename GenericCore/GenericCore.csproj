@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
+    <Compile Include="Support\PatternMatcher.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
     <Compile Include="Cryptography\GenericEncryption.cs" />
     <Compile Include="Cryptography\Hashing.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethods.cs" />
-    <Compile Include="Support\KeysManager.cs" />
+    <Compile Include="Support\Counter.cs" />
     <Compile Include="Collections\Trees\Common\ITreeNode.cs" />
     <Compile Include="Collections\Trees\Common\Node.cs" />
     <Compile Include="Collections\Trees\Common\Tree.cs" />
@@ -71,9 +72,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Ionic.Zip.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
