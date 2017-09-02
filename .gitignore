@@ -57,6 +57,7 @@ sh.exe.stackdump
 *.pidb
 *.svclog
 *.scc
+*.txt
 
 
 # Visual Studio profiler
