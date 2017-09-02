@@ -266,5 +266,13 @@ namespace GenericCore.Support
                             }
                     );
         }
+
+        public static IList<T> Clone<T>(this IList<T> list) where T : ICloneable
+        {
+            return
+                list
+                    .ToList()
+                    .ConvertAll(x => (T)x.Clone());
+        }
     }
 }

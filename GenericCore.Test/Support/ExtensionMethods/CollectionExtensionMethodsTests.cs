@@ -10,12 +10,24 @@ namespace GenericCore.Test.Support.ExtensionMethods
     [TestClass]
     public class CollectionExtensionMethodsTests
     {
-        class Item
+        class Item : ICloneable
         {
             public long Id { get; set; }
             public string Code { get; set; }
             public string Descr { get; set; }
             public bool IsActive { get; set; }
+
+            public object Clone()
+            {
+                return
+                    new Item
+                    {
+                        Id = Id,
+                        Code = Code,
+                        Descr = Descr,
+                        IsActive = IsActive
+                    };
+            }
         }
 
         private IList<Item> GenerateTestList()
@@ -95,13 +107,22 @@ namespace GenericCore.Test.Support.ExtensionMethods
         [TestMethod]
         public void TestToDictionary()
         {
-            var list = GenerateTestList();
-            var dict = 
+            IList<Item> list = GenerateTestList();
+            IDictionary<long, string> dict = 
                 list
                     .Select(x => new KeyValuePair<long, string>(x.Id, x.Code))
                     .ToDictionary();
 
             Assert.IsInstanceOfType(dict, typeof(IDictionary<long, string>));
+        }
+
+        [TestMethod]
+        public void TestCloneList()
+        {
+            IList<Item> list = GenerateTestList();
+            IList<Item> clone = list.Clone();
+
+            Assert.IsInstanceOfType(clone, typeof(IList<Item>));
         }
     }
 
