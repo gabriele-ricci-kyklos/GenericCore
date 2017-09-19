@@ -39,6 +39,9 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\RequiredPackages\PdfSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -66,6 +69,7 @@
     <Compile Include="Collections\Trees\Common\ITreeNode.cs" />
     <Compile Include="Collections\Trees\Common\Node.cs" />
     <Compile Include="Collections\Trees\Common\Tree.cs" />
+    <Compile Include="Support\Pdf\PdfHelper.cs" />
     <Compile Include="Support\Strings\BinaryString.cs" />
     <Compile Include="UI\ComboItem.cs" />
     <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
