@@ -43,7 +43,7 @@ namespace GenericCore.Support
             return o == null ? failureValue : evaluator(o);
         }
 
-        public static TResult Return<TInput, TResult>(this TInput? o, Func<TInput?, TResult> evaluator, TResult failureValue)
+        public static TResult Return<TInput, TResult>(this TInput? o, Func<TInput, TResult> evaluator, TResult failureValue)
                     where TInput : struct
         {
             return !o.HasValue ? failureValue : evaluator(o.Value);
