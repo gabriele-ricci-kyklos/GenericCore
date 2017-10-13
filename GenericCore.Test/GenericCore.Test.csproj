@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Compression\LZWTest.cs" />
     <Compile Include="Cryptography\CryptographyTests.cs" />
     <Compile Include="StateMachine\StateMachineTests.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionExtensionMethodsTests.cs" />
