@@ -55,6 +55,7 @@
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
     <Compile Include="Support\PatternMatcher.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
     <Compile Include="Cryptography\GenericEncryption.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Collections\Trees\Common\Node.cs" />
     <Compile Include="Collections\Trees\Common\Tree.cs" />
     <Compile Include="Support\Pdf\PdfHelper.cs" />
+    <Compile Include="Support\SharedCounter.cs" />
     <Compile Include="Support\Strings\BinaryString.cs" />
     <Compile Include="UI\ComboItem.cs" />
     <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />

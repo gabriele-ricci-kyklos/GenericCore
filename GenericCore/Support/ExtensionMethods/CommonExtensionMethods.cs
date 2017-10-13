@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -64,6 +65,43 @@ namespace GenericCore.Support
             }
 
             return xml;
+        }
+
+        public static string FormatAsCSV(this object item)
+        {
+            if (item.IsNull())
+            {
+                return string.Empty;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            var properties = item.GetProperties();
+            int i = 0;
+            int count = properties.Count();
+
+            foreach (PropertyInfo propInfo in properties)
+            {
+                string value = propInfo.GetValue(item, null).ToSafeString();
+
+                if (value.IsNullOrEmpty())
+                {
+                }
+                else if (value.Where(z => z == ',').Any())
+                {
+                    sb.Append($"\"{value}\"");
+                }
+                else
+                {
+                    sb.Append(value);
+                }
+
+                if (++i != count)
+                {
+                    sb.Append(",");
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
