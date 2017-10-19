@@ -54,8 +54,10 @@
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
+    <Compile Include="Support\Excel\ExcelReader.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
+    <Compile Include="Support\NameValue.cs" />
     <Compile Include="Support\PatternMatcher.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
     <Compile Include="Cryptography\GenericEncryption.cs" />

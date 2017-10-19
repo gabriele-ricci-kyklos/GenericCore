@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace GenericCore.Support
+{
+    public class NameValue<TName, TValue>
+    {
+        public TName Name { get; private set; }
+        public TValue Value { get { return _valueFunction(); } }
+
+        private readonly Func<TValue> _valueFunction;
+
+        public NameValue(TName name, Func<TValue> valueFunction)
+        {
+            Name = name;
+            _valueFunction = valueFunction;
+        }
+    }
+}
