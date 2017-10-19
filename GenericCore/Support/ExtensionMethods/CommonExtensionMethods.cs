@@ -39,6 +39,23 @@ namespace GenericCore.Support
             return retValue;
         }
 
+        public static object ConvertTo(this object value, Type typeTo)
+        {
+            typeTo = Nullable.GetUnderlyingType(typeTo) ?? typeTo;
+
+            if (value == null || DBNull.Value.Equals(value))
+            {
+                return null;
+            }
+
+            if (value.GetType() == typeTo)
+            {
+                return value;
+            }
+            object retValue = Convert.ChangeType(value, typeTo);
+            return retValue;
+        }
+
         public static TResult Return<TInput, TResult>(this TInput o, Func<TInput, TResult> evaluator, TResult failureValue) where TInput : class
         {
             return o == null ? failureValue : evaluator(o);
