@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GenericCore.Support
 {
@@ -50,6 +51,15 @@ namespace GenericCore.Support
         public static string ToEmptyIfNull(this string s)
         {
             return s.IsNullOrEmpty() ? string.Empty : s;
+        }
+
+        public static string ReplaceInsensitive(this string s, string oldText, string newText)
+        {
+            if (s.IsNull())
+            {
+                return null;
+            }
+            return Regex.Replace(s, oldText, newText, RegexOptions.IgnoreCase);
         }
     }
 }
