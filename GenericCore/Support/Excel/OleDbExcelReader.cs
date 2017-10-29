@@ -8,11 +8,11 @@ using System.Text;
 
 namespace GenericCore.Support.Excel
 {
-    public class ExcelReader
+    public class OleDbExcelReader
     {
         public string ConnectionString { get; private set; }
 
-        public ExcelReader(string connectionString)
+        public OleDbExcelReader(string connectionString)
         {
             connectionString.AssertNotNull("connectionString");
 
@@ -24,7 +24,7 @@ namespace GenericCore.Support.Excel
             return ReadDataImpl(ConnectionString, sheetNames, (name, conn) => new DataTable(name), null);
         }
 
-        public DataSet ReadDataWithMixedData(string[] sheetNames)
+        public DataSet ReadMixedTypesData(string[] sheetNames)
         {
             string connectionStringWhitoutHDR = ConnectionString.ReplaceInsensitive("HDR=YES", "HDR=NO");
 

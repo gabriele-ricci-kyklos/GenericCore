@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GenericCore.Support.Excel
 {
-    public class ExcelConnectionString
+    public class ExcelOleDbConnectionString
     {
         public static string ToExcelV8(string excelFileName)
         {
