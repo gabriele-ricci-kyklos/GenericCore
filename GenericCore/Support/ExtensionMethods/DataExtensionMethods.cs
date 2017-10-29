@@ -27,31 +27,31 @@ namespace GenericCore.Support
             }
         }
 
-        public static IList<IList<T>> ConvertDataSetToList<T>(this DataSet dataSet)
+        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet)
             where T : new()
         {
             return ConvertDataSetToListImpl<T>(dataSet, false, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        public static IList<IList<T>> ConvertDataSetToList<T>(this DataSet dataSet, bool throwIfPropertyNotFound)
+        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound)
             where T : new()
         {
             return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        public static IList<IList<T>> ConvertDataSetToList<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
+        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
             where T : new()
         {
             return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, null, null);
         }
 
-        public static IList<IList<T>> ConvertDataSetToList<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
+        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
             where T : new()
         {
             return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
         }
 
-        public static IList<IList<T>> ConvertDataSetToList<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
+        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
             where T : new()
         {
             return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
