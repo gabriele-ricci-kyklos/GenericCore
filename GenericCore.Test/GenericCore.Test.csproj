@@ -82,6 +82,7 @@
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="Support\SupportTests.cs" />
     <Compile Include="Support\Strings\StringsTests.cs" />
+    <Compile Include="Support\Web\WebTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenericCore.StateMachine\GenericCore.StateMachine.csproj">

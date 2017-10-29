@@ -31,6 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ExcelDataReader, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.2.0\lib\net20\ExcelDataReader.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.2.0\lib\net20\ExcelDataReader.DataSet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <HintPath>..\packages\Unofficial.Ionic.Zip.1.9.1.8\lib\Ionic.Zip.dll</HintPath>
       <Private>True</Private>
@@ -54,8 +66,9 @@
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
-    <Compile Include="Support\Excel\ExcelConnectionString.cs" />
-    <Compile Include="Support\Excel\ExcelReader.cs" />
+    <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
+    <Compile Include="Support\Excel\ExternalExcelReader.cs" />
+    <Compile Include="Support\Excel\OleDbExcelReader.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
     <Compile Include="Support\NameValue.cs" />
@@ -78,6 +91,7 @@
     <Compile Include="Support\Pdf\PdfHelper.cs" />
     <Compile Include="Support\SharedCounter.cs" />
     <Compile Include="Support\Strings\BinaryString.cs" />
+    <Compile Include="Support\Web\WebPageDataRetriever.cs" />
     <Compile Include="UI\ComboItem.cs" />
     <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
   </ItemGroup>
