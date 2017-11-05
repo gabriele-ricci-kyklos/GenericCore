@@ -31,14 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ExcelDataReader, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelDataReader.3.2.0\lib\net20\ExcelDataReader.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ExcelDataReader.DataSet, Version=3.2.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExcelDataReader.DataSet.3.2.0\lib\net20\ExcelDataReader.DataSet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
@@ -67,7 +59,6 @@
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
     <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
-    <Compile Include="Support\Excel\ExternalExcelReader.cs" />
     <Compile Include="Support\Excel\OleDbExcelReader.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
