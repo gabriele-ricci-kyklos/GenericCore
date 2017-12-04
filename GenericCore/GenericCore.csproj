@@ -62,6 +62,10 @@
     <Compile Include="Support\Excel\OleDbExcelReader.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
+    <Compile Include="Support\Factory\FactoryObject.cs" />
+    <Compile Include="Support\Factory\FactoryObjectsCollection.cs" />
+    <Compile Include="Support\Factory\ObjectsFactory.cs" />
+    <Compile Include="Support\Factory\ObjectsFactoryException.cs" />
     <Compile Include="Support\NameValue.cs" />
     <Compile Include="Support\PatternMatcher.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
