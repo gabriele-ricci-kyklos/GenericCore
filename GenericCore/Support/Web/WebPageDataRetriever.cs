@@ -29,13 +29,13 @@ namespace GenericCore.Support.Web
 
             bool succeded = true;
 
-            using (var client = new WebClient())
+            using (WebClient client = new WebClient())
             {
                 try
                 {
                     client.DownloadFile(fileUrl, localFilePath);
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
                     succeded = false;
                 }
