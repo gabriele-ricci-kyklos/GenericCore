@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\Dictionaries\ReadOnlyDictionary.cs" />
+    <Compile Include="Collections\GenericGroupKey.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
     <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
     <Compile Include="Support\Excel\OleDbExcelReader.cs" />

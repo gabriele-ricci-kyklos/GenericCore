@@ -72,6 +72,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Collections\CollectionsTest.cs" />
     <Compile Include="Compression\LZWTest.cs" />
     <Compile Include="Cryptography\CryptographyTests.cs" />
     <Compile Include="StateMachine\StateMachineTests.cs" />
