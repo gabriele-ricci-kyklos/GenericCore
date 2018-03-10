@@ -9,7 +9,7 @@ namespace GenericCore.StateMachine.EventArgs
 {
     public class AbstracTEventArgs<T> : System.EventArgs
     {
-        public State<T> State { get; private set; }
+        public State<T> State { get; }
 
         public AbstracTEventArgs(State<T> state)
         {

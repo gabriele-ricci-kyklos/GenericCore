@@ -14,7 +14,7 @@ namespace GenericCore.StateMachine
         private IList<Action<State<T>>> _enterCallbacks;
         private IList<Action<State<T>>> _exitCallbacks;
 
-        public T Name { get; private set; }
+        public T Name { get; }
 
         public Transition<T> this[State<T> state]
         {

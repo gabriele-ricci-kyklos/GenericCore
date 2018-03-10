@@ -11,7 +11,7 @@ namespace GenericCore.Collections.Trees
     {
         private IList<Node<T>> _children = new List<Node<T>>();
 
-        public bool IsRoot { get; private set; }
+        public bool IsRoot { get; }
         public ReadOnlyCollection<Node<T>> Children
         {
             get
@@ -20,7 +20,7 @@ namespace GenericCore.Collections.Trees
             }
         }
 
-        public T Value { get; private set; }
+        public T Value { get; }
 
         public Node<T> this[int index]
         {

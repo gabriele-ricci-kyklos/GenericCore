@@ -7,7 +7,7 @@ namespace GenericCore.Support
 {
     public class NameValue<TName, TValue>
     {
-        public TName Name { get; private set; }
+        public TName Name { get; }
         public TValue Value { get { return _valueFunction(); } }
 
         private readonly Func<TValue> _valueFunction;

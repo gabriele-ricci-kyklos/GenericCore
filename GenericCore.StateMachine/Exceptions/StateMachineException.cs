@@ -8,7 +8,7 @@ namespace GenericCore.StateMachine.Exceptions
 {
     public class StateMachineException<T> : Exception
     {
-        public ErrorCodes ErrorCode { get; private set; }
+        public ErrorCodes ErrorCode { get; }
 
         public StateMachineException(ErrorCodes ec)
             : this(ec, "Unknown error from StateMachine", null)

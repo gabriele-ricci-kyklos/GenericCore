@@ -10,7 +10,7 @@ namespace GenericCore.Support.Excel
 {
     public class OleDbExcelReader
     {
-        public string ConnectionString { get; private set; }
+        public string ConnectionString { get; }
 
         public OleDbExcelReader(string connectionString)
         {

@@ -12,8 +12,8 @@ namespace GenericCore.StateMachine
     {
         private IList<Action<State<T>, State<T>>> _callbacks;
 
-        public State<T> Source { get; private set; }
-        public State<T> Target { get; private set; }
+        public State<T> Source { get; }
+        public State<T> Target { get; }
 
         public bool IsUnlinked
         {
