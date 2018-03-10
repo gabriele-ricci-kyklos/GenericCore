@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GenericCore.Support.Json.Converters;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -119,6 +121,39 @@ namespace GenericCore.Support
             }
 
             return sb.ToString();
+        }
+
+        public static string FormatAsJSon(this object item, bool indent = false, bool trimZeroInDecimal = false)
+        {
+            if (item == null)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                string objSer =
+                    trimZeroInDecimal
+                    ?
+                    JsonConvert.SerializeObject
+                    (
+                        item,
+                        indent ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None,
+                        new DecimalFormatConverter()
+                    )
+                    :
+                    JsonConvert.SerializeObject
+                    (
+                        item,
+                        indent ? Newtonsoft.Json.Formatting.Indented : Newtonsoft.Json.Formatting.None
+                    );
+
+                return objSer;
+            }
+            catch (Exception ex)
+            {
+                return "<<ERROR while converting to JSON: {0}>>".FormatWith(ex.Message);
+            }
         }
     }
 }
