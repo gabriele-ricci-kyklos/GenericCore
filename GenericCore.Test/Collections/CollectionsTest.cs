@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using GenericCore.Collections;
 using System.Linq;
+using GenericCore.Support;
 
 namespace GenericCore.Test.Collections
 {
@@ -10,7 +11,7 @@ namespace GenericCore.Test.Collections
     public class CollectionsTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void GroupKeyTest()
         {
             var list = GetTestList();
 
@@ -19,6 +20,28 @@ namespace GenericCore.Test.Collections
 
             Assert.IsTrue(ignoreNullValuesGroups.Count() == 2);
             Assert.IsTrue(considerNullValuesGroups.Count() == 3);
+        }
+
+        [TestMethod]
+        public void SafeElementAtTests()
+        {
+            var list = GetTestList();
+            var elementNotFound = list.SafeElementAt(15, new GenericItem { ID = 0 });
+            var elementFound = list.SafeElementAt(0, new GenericItem { ID = 0 });
+
+            Assert.IsTrue(elementNotFound.ID == 0);
+            Assert.AreEqual(elementFound, list[0]);
+        }
+
+        [TestMethod]
+        public void SafeGetValueTests()
+        {
+            var list = GetTestList();
+            var elementNotFound = list.SafeGetValue(15, x => x.ID, 0);
+            var elementFound = list.SafeGetValue(0, x => x.ID, 0);
+
+            Assert.IsTrue(elementNotFound == 0);
+            Assert.AreEqual(elementFound, list[0].ID);
         }
 
         static List<GenericItem> GetTestList() => new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" }, new GenericItem { ID = 1, Name = null, Value = "2" }, new GenericItem { ID = 2, Name = "c", Value = "3" } };

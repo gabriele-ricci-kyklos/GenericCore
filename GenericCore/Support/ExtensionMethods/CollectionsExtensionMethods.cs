@@ -274,5 +274,29 @@ namespace GenericCore.Support
                     .ToList()
                     .ConvertAll(x => (T)x.Clone());
         }
+
+        public static T SafeElementAt<T>(this IEnumerable<T> list, int index, T failureValue = default(T))
+        {
+            try
+            {
+                return list.ElementAt(index);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return failureValue;
+            }
+        }
+
+        public static TValue SafeGetValue<TItem, TValue>(this IEnumerable<TItem> list, int index, Func<TItem, TValue> selector, TValue failureValue = default(TValue))
+        {
+            try
+            {
+                return selector(list.ElementAt(index));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return failureValue;
+            }
+        }
     }
 }
