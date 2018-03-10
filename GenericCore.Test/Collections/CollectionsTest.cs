@@ -44,6 +44,19 @@ namespace GenericCore.Test.Collections
             Assert.AreEqual(elementFound, list[0].ID);
         }
 
+        [TestMethod]
+        public void DistinctByTests()
+        {
+            var list = GetTestList();
+            var distinct = list.DistinctBy(x => x.ID);
+
+            Assert.IsTrue(distinct.Count() == 2);
+            Assert.IsTrue(distinct.First().ID == 1);
+            Assert.IsTrue(distinct.ElementAt(1).ID == 2);
+            Assert.IsTrue(distinct.First().Value == "1");
+            Assert.IsTrue(distinct.ElementAt(1).Value == "3");
+        }
+
         static List<GenericItem> GetTestList() => new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" }, new GenericItem { ID = 1, Name = null, Value = "2" }, new GenericItem { ID = 2, Name = "c", Value = "3" } };
     }
 

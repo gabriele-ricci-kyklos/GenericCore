@@ -298,5 +298,18 @@ namespace GenericCore.Support
                 return failureValue;
             }
         }
+
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer = null)
+        {
+            source.AssertNotNull("source");
+            keySelector.AssertNotNull("keySelector");
+
+            var seenKeys = new HashSet<TKey>(comparer);
+            foreach (var element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                    yield return element;
+            }
+        }
     }
 }
