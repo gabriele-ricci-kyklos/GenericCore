@@ -201,7 +201,7 @@ namespace GenericCore.Support
 
         public static bool IsNullOrEmptyList<T>(this IEnumerable<T> list)
         {
-            return (list.IsNull() || list.Count() == 0);
+            return (list.IsNull() || !list.Any());
         }
 
         public static IDictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
@@ -310,6 +310,11 @@ namespace GenericCore.Support
                 if (seenKeys.Add(keySelector(element)))
                     yield return element;
             }
+        }
+
+        public static IEnumerable<T> ToNullIfEmptyList<T>(this IEnumerable<T> list)
+        {
+            return list.IsNullOrEmptyList() ? null : list;
         }
     }
 }

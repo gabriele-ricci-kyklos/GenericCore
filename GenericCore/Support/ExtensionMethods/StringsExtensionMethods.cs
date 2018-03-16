@@ -61,5 +61,10 @@ namespace GenericCore.Support
             }
             return Regex.Replace(s, oldText, newText, RegexOptions.IgnoreCase);
         }
+
+        public static string ToNullIfEmpty(this string s)
+        {
+            return s.IsNullOrEmpty() ? null : s;
+        }
     }
 }

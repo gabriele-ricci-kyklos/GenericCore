@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -29,6 +30,18 @@ namespace GenericCore.Support
             if (o.IsNull())
             {
                 throw new ArgumentNullException(varName);
+            }
+        }
+
+        public static void AssertHasText(string argument, string name, string message = null)
+        {
+            if (argument.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(
+                    name,
+                    string.Format(
+                    CultureInfo.InvariantCulture,
+                    message.ToNullIfEmpty() ?? "Argument '{0}' cannot be null or resolve to an empty string : '{1}'.", name, argument));
             }
         }
 
