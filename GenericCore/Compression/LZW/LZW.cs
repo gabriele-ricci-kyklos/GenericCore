@@ -6,25 +6,26 @@ using System.Text;
 
 namespace GenericCore.Compression.LZW
 {
+    /*
+     * https://rosettacode.org/wiki/LZW_compression#C.23
+     * Originally taken the code and strongly edited; now rollbacked to the original version and left for legacy
+     * TODO: find a way to represent the output in bytes: https://stackoverflow.com/questions/49210099/how-do-i-represent-an-lzw-output-in-bytes
+     * TODO: accept byte array in input
+    */
+
     public static class LZW
     {
-        public static byte[] Compress(byte[] uncompressed)
+        public static List<int> Compress(string uncompressed)
         {
-            // build the dictionary
-            Dictionary<string, byte> dictionary = new Dictionary<string, byte>();
+            IDictionary<string, int> dictionary = new Dictionary<string, int>();
 
-            if(uncompressed.Any(x => x > 127))
+            for (int i = 0; i < 256; ++i)
             {
-                throw new FormatException("Only ASCII characters are permitted");
-            }
-
-            for (int i = 0; i < 127; i++)
-            {
-                dictionary.Add(((char)i).ToString(), (byte)i);
+                dictionary.Add(((char)i).ToString(), i);
             }
 
             string w = string.Empty;
-            List<byte> compressed = new List<byte>();
+            List<int> compressed = new List<int>();
 
             foreach (char c in uncompressed)
             {
@@ -35,42 +36,37 @@ namespace GenericCore.Compression.LZW
                 }
                 else
                 {
-                    // write w to output
                     compressed.Add(dictionary[w]);
-                    // wc is a new sequence; add it to the dictionary
-                    dictionary.Add(wc, (byte)dictionary.Count);
+                    dictionary.Add(wc, dictionary.Count);
                     w = c.ToString();
                 }
             }
-
-            // write remaining output if necessary
+            
             if (!string.IsNullOrEmpty(w))
             {
                 compressed.Add(dictionary[w]);
             }
 
-            return compressed.ToArray();
+            return compressed;
         }
 
-        public static byte[] Decompress(byte[] compressed)
+        public static string Decompress(List<int> compressed)
         {
-            IList<byte> compressedList = new List<byte>(compressed);
-
-            // build the dictionary
             Dictionary<int, string> dictionary = new Dictionary<int, string>();
-            for (int i = 0; i < 127; i++)
+
+            for (int i = 0; i < 256; i++)
             {
                 dictionary.Add(i, ((char)i).ToString());
             }
 
-            string w = dictionary[compressedList[0]];
-            compressedList.RemoveAt(0);
+            string w = dictionary[compressed[0]];
+            compressed.RemoveAt(0);
             StringBuilder decompressed = new StringBuilder(w);
 
-            string entry = null;
-            foreach (int k in compressedList)
+            foreach (int k in compressed)
             {
-                entry = null;
+                string entry = null;
+
                 if (dictionary.ContainsKey(k))
                 {
                     entry = dictionary[k];
@@ -81,14 +77,13 @@ namespace GenericCore.Compression.LZW
                 }
 
                 decompressed.Append(entry);
-
-                // new sequence; add it to the dictionary
+                
                 dictionary.Add(dictionary.Count, w + entry[0]);
 
                 w = entry;
             }
 
-            return Encoding.ASCII.GetBytes(decompressed.ToString());
+            return decompressed.ToString();
         }
     }
 }
