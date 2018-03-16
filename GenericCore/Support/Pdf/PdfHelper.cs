@@ -99,5 +99,4 @@ namespace GenericCore.Support.Pdf
             return outputBytes;
         }
     }
-
 }
