@@ -66,5 +66,40 @@ namespace GenericCore.Support
         {
             return s.IsNullOrEmpty() ? null : s;
         }
+
+        public static string SafeGetLeftPart(this string s, int n)
+        {
+            if (s.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+            if (n >= s.Length)
+            {
+                return s;
+            }
+            if (n < 0)
+            {
+                return s;
+            }
+            return s.Substring(0, n);
+        }
+
+        public static string SafeGetRightPart(this string s, int n)
+        {
+            if (s.IsNullOrEmpty())
+            {
+                return string.Empty;
+            }
+            if (n >= s.Length)
+            {
+                return s;
+            }
+            if (n < 0)
+            {
+                return s;
+            }
+
+            return s.Substring(s.Length - n);
+        }
     }
 }

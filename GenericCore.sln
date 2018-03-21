@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore.Test", "Generic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore.StateMachine", "GenericCore.StateMachine\GenericCore.StateMachine.csproj", "{589E710F-9320-43F5-8306-EBB4012EF403}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenericCore.DataAccess", "GenericCore.DataAccess\GenericCore.DataAccess.csproj", "{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{589E710F-9320-43F5-8306-EBB4012EF403}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{589E710F-9320-43F5-8306-EBB4012EF403}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{589E710F-9320-43F5-8306-EBB4012EF403}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

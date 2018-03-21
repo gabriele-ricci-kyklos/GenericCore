@@ -33,7 +33,7 @@ namespace GenericCore.Support
             }
         }
 
-        public static void AssertHasText(string argument, string name, string message = null)
+        public static void AssertHasText(this string argument, string name, string message = null)
         {
             if (argument.IsNullOrEmpty())
             {
