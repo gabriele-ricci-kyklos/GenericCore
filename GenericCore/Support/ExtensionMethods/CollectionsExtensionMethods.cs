@@ -316,5 +316,38 @@ namespace GenericCore.Support
         {
             return list.IsNullOrEmptyList() ? null : list;
         }
+
+        public static IEnumerable<List<T>> Split<T>(this List<T> list, int chunkSize)
+        {
+            if (chunkSize <= 0)
+            {
+                throw new FormatException("The size cannot be <= 0");
+            }
+
+            for (int i = 0; i < list.Count; i += chunkSize)
+            {
+                yield return list.GetRange(i, Math.Min(chunkSize, list.Count - i));
+            }
+        }
+
+        public static IEnumerable<T[]> Split<T>(this T[] list, int chunkSize)
+        {
+            if (chunkSize <= 0)
+            {
+                throw new FormatException("The size cannot be <= 0");
+            }
+
+            for (int i = 0; i < list.Length; i += chunkSize)
+            {
+                yield return list.GetRange(i, Math.Min(chunkSize, list.Length - i));
+            }
+        }
+
+        public static T[] GetRange<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
     }
 }

@@ -124,6 +124,17 @@ namespace GenericCore.Test.Support.ExtensionMethods
 
             Assert.IsInstanceOfType(clone, typeof(IList<Item>));
         }
+
+        [TestMethod]
+        public void TestSplitArrayAndList()
+        {
+            var list = Enumerable.Range(0, 1000000);
+            var splitList = list.ToList().Split(14);
+            var splitArray = list.ToArray().Split(14);
+
+            Assert.IsTrue(splitList.Count() == 71429);
+            Assert.IsTrue(splitArray.Count() == 71429);
+        }
     }
 
     public static class CollectionExtensionMethodsTestsExtMethods
