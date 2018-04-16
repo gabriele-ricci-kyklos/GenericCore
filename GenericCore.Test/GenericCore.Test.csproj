@@ -54,6 +54,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
   </ItemGroup>
@@ -75,6 +79,7 @@
     <Compile Include="Collections\CollectionsTest.cs" />
     <Compile Include="Compression\LZWTest.cs" />
     <Compile Include="Cryptography\CryptographyTests.cs" />
+    <Compile Include="DataAccess\DataAccessTests.cs" />
     <Compile Include="StateMachine\StateMachineTests.cs" />
     <Compile Include="Support\Excel\ExcelTests.cs" />
     <Compile Include="Support\ExtensionMethods\BitArrayExtensionMethodsTest.cs" />
@@ -87,6 +92,10 @@
     <Compile Include="Support\Web\WebTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GenericCore.DataAccess\GenericCore.DataAccess.csproj">
+      <Project>{1D99BB74-BD0F-4D5C-949A-A3F7FEFB34A6}</Project>
+      <Name>GenericCore.DataAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GenericCore.StateMachine\GenericCore.StateMachine.csproj">
       <Project>{589e710f-9320-43f5-8306-ebb4012ef403}</Project>
       <Name>GenericCore.StateMachine</Name>
@@ -95,6 +104,10 @@
       <Project>{6feaabc8-4927-4364-b1b0-05b72ec95a5a}</Project>
       <Name>GenericCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
