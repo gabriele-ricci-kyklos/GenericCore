@@ -8,10 +8,7 @@ using System.Text;
 namespace GenericCore.Compression.LZW
 {
     /*
-     * https://rosettacode.org/wiki/LZW_compression#C.23
-     * Originally taken the code and strongly edited; now rollbacked to the original version and left for legacy
-     * TODO: find a way to represent the output in bytes: https://stackoverflow.com/questions/49210099/how-do-i-represent-an-lzw-output-in-bytes
-     * TODO: accept byte array in input
+     * Started using the code from https://rosettacode.org/wiki/LZW_compression#C.23
     */
 
     public class LZW
@@ -122,10 +119,23 @@ namespace GenericCore.Compression.LZW
             bytes.AssertNotNull("bytes");
 
             int maxSignBitIndex = (int)bytes[0];
+            int maxBytesNumber = maxSignBitIndex + 1;
 
             BitArray bits = new BitArray(bytes.Skip(1).ToArray());
-            var integerChunks = bits.ToArray().Split(maxSignBitIndex + 1).Where(x => x.Count() == maxSignBitIndex + 1).Select(x => new BitArray(x));
-            IList<int> output = integerChunks.Select(x => x.ToIntArray()).SelectMany(x => x).ToList();
+
+            var integerChunks = 
+                bits
+                    .ToArray()
+                    .Split(maxSignBitIndex + 1)
+                    .Where(x => x.Count() == maxBytesNumber)
+                    .Select(x => new BitArray(x));
+
+            IList<int> output = 
+                integerChunks
+                    .Select(x => x.ToIntArray())
+                    .SelectMany(x => x)
+                    .ToList();
+
             return output;
         }
 
