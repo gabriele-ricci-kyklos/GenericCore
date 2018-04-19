@@ -101,5 +101,12 @@ namespace GenericCore.Support
 
             return s.Substring(s.Length - n);
         }
+
+        public static string Shuffle(this string str)
+        {
+            char[] strCh = str.ToCharArray();
+            strCh.Shuffle();
+            return new string(strCh);
+        }
     }
 }

@@ -349,5 +349,20 @@ namespace GenericCore.Support
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+
+        // credits: https://rosettacode.org/wiki/Knuth_shuffle#C.23
+        public static void Shuffle<T>(this T[] array)
+        {
+            Random random = new Random();
+            T temp = default(T);
+
+            for (int i = 0; i < array.Length; ++i)
+            {
+                int j = random.Next(i, array.Length);
+                temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
     }
 }

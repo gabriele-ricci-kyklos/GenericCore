@@ -25,5 +25,14 @@ namespace GenericCore.Test.Support.ExtensionMethods
             Assert.IsTrue(str2 == "{0}{1}".FormatWith(str, token));
             Assert.IsTrue(str3 == "{0}{1}{2}".FormatWith(str, separator, token));
         }
+
+        [TestMethod]
+        public void TestShuffle()
+        {
+            string s = "abcdef";
+            string shuffled = s.Shuffle();
+
+            Assert.AreNotEqual(s, shuffled);
+        }
     }
 }
