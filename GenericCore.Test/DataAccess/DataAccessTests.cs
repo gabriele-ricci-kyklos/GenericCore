@@ -5,6 +5,7 @@ using GenericCore.DataAccess;
 using GenericCore.Support;
 using System.Data.Common;
 using GenericCore.DataAccess.DAOHelper;
+using GenericCore.DataAccess.Factory;
 
 namespace GenericCore.Test.DataAccess
 {
@@ -15,7 +16,7 @@ namespace GenericCore.Test.DataAccess
         public void OracleTestSimpleQuery()
         {
             long id = -1;
-            SqlQueryBuilder builder = new SqlQueryBuilder(new OracleDAOHelper());
+            SqlQueryBuilder builder = new SqlQueryBuilder(new OracleDAOHelper("Oracle.ManagedDataAccess.Client"));
             builder
                 .Select(new string[] { "IDINSTANCE" })
                 .From("BTINSTANCES", "B")
@@ -57,10 +58,10 @@ namespace GenericCore.Test.DataAccess
         }
 
         [TestMethod]
-        public void sqlServerTestSimpleQuery()
+        public void SqlServerTestSimpleQuery()
         {
             long id = -1;
-            SqlQueryBuilder builder = new SqlQueryBuilder(new SqlServerDAOHelper());
+            SqlQueryBuilder builder = new SqlQueryBuilder(new SqlServerDAOHelper("System.Data.SqlClient"));
             builder
                 .Select(new string[] { "IDINSTANCE" })
                 .From("BTINSTANCES", "B")
@@ -99,6 +100,26 @@ namespace GenericCore.Test.DataAccess
             }
 
             Assert.IsTrue(id != -1);
+        }
+
+        [TestMethod]
+        public void ExecuteScalarTest()
+        {
+            var dao = new MyDAO();
+            object a = dao.MyQuery();
+        }
+    }
+
+    class MyDAO : BaseDAO
+    {
+        public MyDAO()
+            : base(new GenericDatabaseFactory())
+        {
+        }
+
+        public object MyQuery()
+        {
+            return ExecuteScalar("SELECT TOP 1 IDINSTANCE FROM BTINSTANCES");
         }
     }
 }

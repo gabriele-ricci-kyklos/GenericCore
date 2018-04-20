@@ -1,4 +1,5 @@
-﻿using GenericCore.Support;
+﻿using GenericCore.DataAccess.DAOHelper;
+using GenericCore.Support;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -55,6 +56,12 @@ namespace GenericCore.DataAccess.QueryBuilder
         public SqlQueryBuilder Where()
         {
             _query.Append(" WHERE");
+            return this;
+        }
+
+        public SqlQueryBuilder True()
+        {
+            _query.Append(" 1 = 1");
             return this;
         }
 
