@@ -1,5 +1,6 @@
 ﻿using GenericCore.Support;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,15 +8,27 @@ using System.Text;
 namespace GenericCore.Compression.LZW
 {
     /*
-     * https://rosettacode.org/wiki/LZW_compression#C.23
-     * Originally taken the code and strongly edited; now rollbacked to the original version and left for legacy
-     * TODO: find a way to represent the output in bytes: https://stackoverflow.com/questions/49210099/how-do-i-represent-an-lzw-output-in-bytes
-     * TODO: accept byte array in input
+     * Started using the code from https://rosettacode.org/wiki/LZW_compression#C.23
     */
 
-    public static class LZW
+    public class LZW
     {
-        public static List<int> Compress(string uncompressed)
+        public static byte[] Compress(string input)
+        {
+            LZW lzw = new LZW();
+            IList<int> output = lzw.CompressString(input);
+            return lzw.OutputToBytes(output);
+        }
+
+        public static string Decompress(byte[] input)
+        {
+            LZW lzw = new LZW();
+            IList<int> output = lzw.BytesToOutput(input);
+            string str = lzw.DecompressString(output);
+            return str;
+        }
+
+        private IList<int> CompressString(string uncompressed)
         {
             IDictionary<string, int> dictionary = new Dictionary<string, int>();
 
@@ -25,11 +38,11 @@ namespace GenericCore.Compression.LZW
             }
 
             string w = string.Empty;
-            List<int> compressed = new List<int>();
+            IList<int> compressed = new List<int>();
 
-            foreach (char c in uncompressed)
+            for(int i = 0; i < uncompressed.Length; ++i)
             {
-                string wc = w + c;
+                string wc = w + uncompressed[i];
                 if (dictionary.ContainsKey(wc))
                 {
                     w = wc;
@@ -38,11 +51,11 @@ namespace GenericCore.Compression.LZW
                 {
                     compressed.Add(dictionary[w]);
                     dictionary.Add(wc, dictionary.Count);
-                    w = c.ToString();
+                    w = uncompressed[i].ToString();
                 }
             }
             
-            if (!string.IsNullOrEmpty(w))
+            if (!w.IsNullOrEmpty())
             {
                 compressed.Add(dictionary[w]);
             }
@@ -50,11 +63,11 @@ namespace GenericCore.Compression.LZW
             return compressed;
         }
 
-        public static string Decompress(List<int> compressed)
+        private string DecompressString(IList<int> compressed)
         {
-            Dictionary<int, string> dictionary = new Dictionary<int, string>();
+            IDictionary<int, string> dictionary = new Dictionary<int, string>();
 
-            for (int i = 0; i < 256; i++)
+            for (int i = 0; i < 256; ++i)
             {
                 dictionary.Add(i, ((char)i).ToString());
             }
@@ -62,28 +75,78 @@ namespace GenericCore.Compression.LZW
             string w = dictionary[compressed[0]];
             compressed.RemoveAt(0);
             StringBuilder decompressed = new StringBuilder(w);
+            string entry = null;
 
-            foreach (int k in compressed)
+            for (int i = 0; i < compressed.Count; ++i)
             {
-                string entry = null;
+                entry = null;
 
-                if (dictionary.ContainsKey(k))
+                if (dictionary.ContainsKey(compressed[i]))
                 {
-                    entry = dictionary[k];
+                    entry = dictionary[compressed[i]];
                 }
-                else if (k == dictionary.Count)
+                else if (compressed[i] == dictionary.Count)
                 {
                     entry = w + w[0];
                 }
 
                 decompressed.Append(entry);
-                
+
                 dictionary.Add(dictionary.Count, w + entry[0]);
 
                 w = entry;
             }
 
             return decompressed.ToString();
+        }
+
+        private byte[] OutputToBytes(IList<int> output)
+        {
+            output.AssertNotNull("output");
+
+            BitArray bits = new BitArray(output.ToArray());
+            int maxSignBitIndex;
+            BitArray reducedBits = bits.ToMaxSignificantBits(out maxSignBitIndex);
+            byte[] outputBytes = reducedBits.ToByteArray();
+            byte[] newBytes = new byte[outputBytes.Length + 1];
+            newBytes[0] = ConvertIntToSingleByte(maxSignBitIndex);
+            Array.Copy(outputBytes, 0, newBytes, 1, outputBytes.Length);
+            return newBytes;
+        }
+
+        private IList<int> BytesToOutput(byte[] bytes)
+        {
+            bytes.AssertNotNull("bytes");
+
+            int maxSignBitIndex = (int)bytes[0];
+            int maxBytesNumber = maxSignBitIndex + 1;
+
+            BitArray bits = new BitArray(bytes.Skip(1).ToArray());
+
+            var integerChunks = 
+                bits
+                    .ToArray()
+                    .Split(maxSignBitIndex + 1)
+                    .Where(x => x.Count() == maxBytesNumber)
+                    .Select(x => new BitArray(x));
+
+            IList<int> output = 
+                integerChunks
+                    .Select(x => x.ToIntArray())
+                    .SelectMany(x => x)
+                    .ToList();
+
+            return output;
+        }
+
+        private byte ConvertIntToSingleByte(int n)
+        {
+            if(n < 0 || n > 255)
+            {
+                throw new FormatException($"Unable to convert {n} to a single byte");
+            }
+
+            return (byte)n;
         }
     }
 }

@@ -82,6 +82,7 @@
     <Compile Include="DataAccess\DataAccessTests.cs" />
     <Compile Include="StateMachine\StateMachineTests.cs" />
     <Compile Include="Support\Excel\ExcelTests.cs" />
+    <Compile Include="Support\ExtensionMethods\BitArrayExtensionMethodsTest.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethodsTests.cs" />

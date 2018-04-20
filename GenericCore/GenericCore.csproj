@@ -62,6 +62,7 @@
     <Compile Include="Singleton.cs" />
     <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
     <Compile Include="Support\Excel\OleDbExcelReader.cs" />
+    <Compile Include="Support\ExtensionMethods\BitArrayExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
     <Compile Include="Support\Factory\FactoryObject.cs" />
