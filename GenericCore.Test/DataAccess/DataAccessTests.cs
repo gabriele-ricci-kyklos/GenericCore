@@ -105,6 +105,7 @@ namespace GenericCore.Test.DataAccess
         [TestMethod]
         public void ExecuteScalarTest()
         {
+            //changing the connection string to different providers will work
             var dao = new MyDAO();
             object a = dao.MyQuery();
         }
