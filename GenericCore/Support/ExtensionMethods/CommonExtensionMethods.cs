@@ -168,5 +168,17 @@ namespace GenericCore.Support
                 return "<<ERROR while converting to JSON: {0}>>".FormatWith(ex.Message);
             }
         }
+
+        //credits: https://docs.microsoft.com/it-it/dotnet/csharp/programming-guide/nullable-types/how-to-identify-a-nullable-type
+        public static bool IsNullable<T>(this T obj)
+        {
+            if(obj.IsNull())
+            {
+                return true;
+            }
+
+            Type type = typeof(T);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
     }
 }
