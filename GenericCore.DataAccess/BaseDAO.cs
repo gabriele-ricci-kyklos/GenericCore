@@ -1,6 +1,7 @@
 ﻿using GenericCore.DataAccess.DAOHelper;
 using GenericCore.DataAccess.Factory;
 using GenericCore.DataAccess.QueryBuilder;
+using GenericCore.DataAccess.SqlParameters;
 using GenericCore.Support;
 using System;
 using System.Collections.Generic;
@@ -13,32 +14,35 @@ namespace GenericCore.DataAccess
 {
     public abstract class BaseDAO
     {
-        protected IGenericDatabaseFactory _factory;
+        protected IGenericDatabaseFactory Factory;
+        protected ISqlParametersManager SqlParametersManager;
 
         protected IDAOHelper DAOHelper
         {
             get
             {
-                return _factory.DAOHelper;
+                return Factory.DAOHelper;
             }
         }
 
         public BaseDAO(IGenericDatabaseFactory factory)
         {
             factory.AssertNotNull(nameof(factory));
-            _factory = factory;
+
+            Factory = factory;
+            SqlParametersManager = new SqlParametersManager(Factory.DAOHelper);
         }
 
         protected SqlQueryBuilder NewSqlQueryBuilder()
         {
-            return new SqlQueryBuilder(_factory.DAOHelper);
+            return new SqlQueryBuilder(Factory.DAOHelper);
         }
         
-        protected object ExecuteScalar(string query, IList<QueryDbParameter> parameters = null)
+        protected object ExecuteScalar(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
 
-            using (var connection = _factory.GetGenericDbConnection())
+            using (var connection = Factory.GetGenericDbConnection())
             {
                 connection.Open();
 
@@ -51,11 +55,11 @@ namespace GenericCore.DataAccess
             }
         }
 
-        protected int ExecuteNonQuery(string query, IList<QueryDbParameter> parameters = null)
+        protected int ExecuteNonQuery(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
 
-            using (var connection = _factory.GetGenericDbConnection())
+            using (var connection = Factory.GetGenericDbConnection())
             {
                 connection.Open();
 
@@ -68,7 +72,7 @@ namespace GenericCore.DataAccess
             }
         }
 
-        private void AddParameters(DbCommand command, IList<QueryDbParameter> parameters)
+        private void AddParameters(DbCommand command, IList<SqlParameter> parameters)
         {
             command.AssertNotNull(nameof(command));
 
@@ -77,11 +81,12 @@ namespace GenericCore.DataAccess
                 return;
             }
 
-            foreach (var builderParam in parameters)
+            foreach (SqlParameter queryParam in parameters)
             {
-                var param = command.CreateParameter();
-                param.ParameterName = builderParam.Name;
-                param.Value = builderParam.Value;
+                DbParameter param = command.CreateParameter();
+                param.DbType = DAOHelper.MapTypeToDbType(queryParam.Type);
+                param.ParameterName = queryParam.Name;
+                param.Value = queryParam.Value;
                 command.Parameters.Add(param);
             }
         }

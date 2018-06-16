@@ -45,6 +45,8 @@
     <Compile Include="DAOHelper\OracleDAOHelper.cs" />
     <Compile Include="DAOHelper\SqlServerDAOHelper.cs" />
     <Compile Include="DAOHelper\IDAOHelper.cs" />
+    <Compile Include="SqlParameters\SqlParametersManager.cs" />
+    <Compile Include="SqlParameters\ISqlParametersManager.cs" />
     <Compile Include="Factory\BaseGenericDatabaseFactory.cs" />
     <Compile Include="Factory\GenericDatabaseFactory.cs" />
     <Compile Include="Factory\IGenericDatabaseFactory.cs" />
@@ -52,7 +54,7 @@
     <Compile Include="QueryBuilder\SelectField.cs" />
     <Compile Include="QueryBuilder\SqlQueryBuilder.cs" />
     <Compile Include="QueryBuilder\WhereOperator.cs" />
-    <Compile Include="QueryDbParameter.cs" />
+    <Compile Include="SqlParameters\SqlParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenericCore\GenericCore.csproj">

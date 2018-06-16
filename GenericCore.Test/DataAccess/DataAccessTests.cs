@@ -6,6 +6,7 @@ using GenericCore.Support;
 using System.Data.Common;
 using GenericCore.DataAccess.DAOHelper;
 using GenericCore.DataAccess.Factory;
+using GenericCore.DataAccess.SqlParameters;
 
 namespace GenericCore.Test.DataAccess
 {
@@ -107,7 +108,7 @@ namespace GenericCore.Test.DataAccess
         {
             //changing the connection string to different providers will work
             var dao = new MyDAO();
-            object a = dao.MyQuery();
+            object a = dao.MyQuery(4679991);
         }
     }
 
@@ -118,9 +119,10 @@ namespace GenericCore.Test.DataAccess
         {
         }
 
-        public object MyQuery()
+        public object MyQuery(long idInstance)
         {
-            return ExecuteScalar("SELECT TOP 1 IDINSTANCE FROM BTINSTANCES");
+            SqlParameter idInstanceParam = SqlParametersManager.BuildSqlParameter("IDINSTANCE", idInstance);
+            return ExecuteScalar($"SELECT IDINSTANCE FROM BTINSTANCES WHERE IDINSTANCE = {idInstanceParam.Name}", idInstanceParam.AsArray());
         }
     }
 }

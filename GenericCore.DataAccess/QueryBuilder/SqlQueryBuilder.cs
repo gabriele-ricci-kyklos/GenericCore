@@ -1,4 +1,5 @@
 ﻿using GenericCore.DataAccess.DAOHelper;
+using GenericCore.DataAccess.SqlParameters;
 using GenericCore.Support;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,19 @@ namespace GenericCore.DataAccess.QueryBuilder
     {
         private const string _paramNamePrefix = "pq";
         private StringBuilder _query;
+        private ISqlParametersManager _parametersManager;
 
         public IDAOHelper DAOHelper { get; private set; }
-        public IList<QueryDbParameter> Parameters { get; private set; }
+        public IList<SqlParameter> Parameters { get; private set; }
 
         public SqlQueryBuilder(IDAOHelper daoHelper)
         {
             daoHelper.AssertNotNull(nameof(daoHelper));
 
             _query = new StringBuilder();
-            Parameters = new List<QueryDbParameter>();
+            _parametersManager = new SqlParametersManager(daoHelper);
+
+            Parameters = new List<SqlParameter>();
             DAOHelper = daoHelper;
         }
 
@@ -98,7 +102,6 @@ namespace GenericCore.DataAccess.QueryBuilder
             string originalFieldName = fieldName;
             fieldName = DAOHelper.EscapeField(fieldName);
 
-            string paramName;
             switch (whereOperator)
             {
                 case WhereOperator.EqualTo:
@@ -106,14 +109,14 @@ namespace GenericCore.DataAccess.QueryBuilder
 
                     if (!(IsNullOrEmptyString(value) && skipIfNull))
                     {
-                        paramName = BuildParameterName(originalFieldName);
-                        Parameters.Add(new QueryDbParameter(paramName, value));
-                        if(IsNullOrEmptyString(value))
+                        SqlParameter paramNotEqualTo = _parametersManager.BuildSqlParameter(originalFieldName, value);
+                        Parameters.Add(paramNotEqualTo);
+                        if (IsNullOrEmptyString(value))
                         {
                             return $"{fieldName} IS NULL";
                         }
 
-                        return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramName}";
+                        return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramNotEqualTo.Name}";
                     }
 
                     break;
@@ -123,9 +126,9 @@ namespace GenericCore.DataAccess.QueryBuilder
                 case WhereOperator.LessEqualThan:
                 case WhereOperator.LessThan:
 
-                    paramName = BuildParameterName(originalFieldName);
-                    Parameters.Add(new QueryDbParameter(paramName, value));
-                    return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramName}";
+                    SqlParameter paramLessThan = _parametersManager.BuildSqlParameter(originalFieldName, value);
+                    Parameters.Add(paramLessThan);
+                    return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramLessThan.Name}";
                     
                 case WhereOperator.In:
                 case WhereOperator.NotIn:
@@ -142,9 +145,9 @@ namespace GenericCore.DataAccess.QueryBuilder
 
                     foreach (object valueItem in valueList)
                     {
-                        paramName = BuildParameterName(originalFieldName);
-                        Parameters.Add(new QueryDbParameter(paramName, valueItem));
-                        chunkList.Add($"{paramName}");
+                        SqlParameter paramIn = _parametersManager.BuildSqlParameter(originalFieldName, value);
+                        Parameters.Add(paramIn);
+                        chunkList.Add($"{paramIn.Name}");
                     }
 
                     chunk.Append(chunkList.StringJoin(","));
@@ -171,19 +174,6 @@ namespace GenericCore.DataAccess.QueryBuilder
             }
 
             return strValue.IsNullOrEmpty();
-        }
-
-        private string BuildParameterName(string fieldName)
-        {
-            string pname =
-                _paramNamePrefix +
-                fieldName
-                .ToEmptyIfNull()
-                .Replace(' ', '_')
-                .SafeGetLeftPart(8)
-                .ToLowerInvariant();
-
-            return $"{DAOHelper.ParameterStartPrefix}{pname}_{Parameters.Count}";
         }
 
         public SqlQueryBuilder CustomSql(string sql)
