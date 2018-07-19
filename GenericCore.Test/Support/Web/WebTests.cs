@@ -11,7 +11,7 @@ namespace GenericCore.Test.Support.Web
         [TestMethod]
         public void TestPage()
         {
-            string html = WebPageDataRetriever.RetrievePage("https://google.it/");
+            string html = WebDataRetriever.RetrievePage("https://google.it/");
             Assert.IsNotNull(html);
         }
 
@@ -19,7 +19,7 @@ namespace GenericCore.Test.Support.Web
         public void TestFile()
         {
             string localPath = @"C:\temp\master.zip";
-            bool succeded = WebPageDataRetriever.DownloadFile("https://github.com/gabriele-ricci-kyklos/FantasyFootballStatistics/archive/master.zip", localPath);
+            bool succeded = WebDataRetriever.TryDownloadFile("https://github.com/gabriele-ricci-kyklos/FantasyFootballStatistics/archive/master.zip", localPath);
             Assert.IsTrue(succeded);
             Assert.IsTrue(File.Exists(localPath));
         }
