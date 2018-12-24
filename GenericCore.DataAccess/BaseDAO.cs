@@ -53,6 +53,23 @@ namespace GenericCore.DataAccess
             }
         }
 
+        protected async Task<object> ExecuteScalarAsync(string query, IList<SqlParameter> parameters = null)
+        {
+            query.AssertHasText(nameof(query));
+
+            using (var connection = Factory.GetGenericDbConnection())
+            {
+                connection.Open();
+
+                var command = connection.CreateCommand();
+                command.CommandText = query;
+
+                AddParameters(command, parameters);
+
+                return await command.ExecuteScalarAsync();
+            }
+        }
+
         protected int ExecuteNonQuery(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
@@ -67,6 +84,23 @@ namespace GenericCore.DataAccess
                 AddParameters(command, parameters);
 
                 return command.ExecuteNonQuery();
+            }
+        }
+
+        protected async Task<int> ExecuteNonQueryAsync(string query, IList<SqlParameter> parameters = null)
+        {
+            query.AssertHasText(nameof(query));
+
+            using (var connection = Factory.GetGenericDbConnection())
+            {
+                connection.Open();
+
+                var command = connection.CreateCommand();
+                command.CommandText = query;
+
+                AddParameters(command, parameters);
+
+                return await command.ExecuteNonQueryAsync();
             }
         }
 
