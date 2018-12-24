@@ -8,95 +8,270 @@ using System.Text;
 
 namespace GenericCore.Support.Pdf
 {
-    // Uses a modified version of the library PdfSharp to solve a known bug: http://forum.pdfsharp.net/viewtopic.php?p=583#p583
-    public static class PdfHelper
+    public class PdfHelper
     {
-        public static byte[] MergePdfFilesInASingleDocument(IList<string> files)
+        private class KeyedStreamWithValue<T>
         {
-            IList<byte[]> fileBytes = new List<byte[]>();
+            public Guid Key { get; private set; }
+            public Stream Stream;
+            public T Value { get; private set; }
 
-            foreach (string file in files)
+            public KeyedStreamWithValue(Stream stream, T value)
             {
-                if (!File.Exists(file))
-                {
-                    throw new FileNotFoundException($"The file '{file}' has not been found");
-                }
+                stream.AssertNotNull("stream");
 
-                fileBytes.Add(File.ReadAllBytes(file));
+                Key = Guid.NewGuid();
+                Stream = stream;
+                Value = value;
             }
-
-            byte[] mergedPdf = MergePdfFilesInASingleDocument(fileBytes.ToArray());
-            return mergedPdf;
         }
 
-        public static void MergePdfFilesInASingleDocument(IList<string> files, string destFilePath)
+        private PdfDocument MergePDFFilesImpl<T>(IList<KeyedStreamWithValue<T>> streamList, out IList<Exception> errorList, out IList<KeyedStreamWithValue<T>> filesInError)
         {
-            IList<byte[]> fileBytes = new List<byte[]>();
+            streamList.AssertNotNullAndHasElements("files");
 
-            foreach (string file in files)
+            using (PdfDocument outputDocument = new PdfDocument())
             {
-                if(!File.Exists(file))
-                {
-                    throw new FileNotFoundException($"The file '{file}' has not been found");
-                }
-
-                fileBytes.Add(File.ReadAllBytes(file));
-            }
-
-            byte[] mergedPdf = MergePdfFilesInASingleDocument(fileBytes.ToArray());
-            File.WriteAllBytes(destFilePath, mergedPdf);
-        }
-
-        public static void MergePdfFilesInASingleDocument(byte[][] files, string destFilePath)
-        {
-            if (!Path.GetExtension(destFilePath).Equals(".pdf"))
-            {
-                destFilePath = Path.ChangeExtension(destFilePath, ".pdf");
-            }
-
-            byte[] mergedPdf = MergePdfFilesInASingleDocument(files);
-            File.WriteAllBytes(destFilePath, mergedPdf);
-        }
-
-        public static byte[] MergePdfFilesInASingleDocument(byte[][] files)
-        {
-            byte[] outputBytes = null;
-            PdfDocument outputDocument = new PdfDocument();
-
-            try
-            {
-                // Show consecutive pages facing. Requires Acrobat 5 or higher.
                 outputDocument.PageLayout = PdfPageLayout.TwoColumnLeft;
+                errorList = new List<Exception>();
+                filesInError = new List<KeyedStreamWithValue<T>>();
 
-                foreach (byte[] file in files)
+                foreach (KeyedStreamWithValue<T> stream in streamList)
                 {
-                    using (Stream stream = new MemoryStream(file))
-                    {
-                        // we create a reader for the document
-                        PdfDocument inputDocument = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+                    IList<PdfPage> singleDocPageList = new List<PdfPage>();
 
-                        // Iterate pages
-                        int count = inputDocument.PageCount;
-                        for (int idx = 0; idx < count; idx++)
+                    try
+                    {
+                        using (PdfDocument inputDocument = PdfReader.Open(stream.Stream, PdfDocumentOpenMode.Import))
                         {
-                            PdfPage page = inputDocument.Pages[idx];
-                            outputDocument.AddPage(page);
+                            for (int i = 0; i < inputDocument.PageCount; ++i)
+                            {
+                                PdfPage page = inputDocument.Pages[i];
+                                singleDocPageList.Add(page);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errorList.Add(ex);
+                        filesInError.Add(stream);
+                        singleDocPageList = new List<PdfPage>();
+                    }
+                    finally
+                    {
+                        for (int i = 0; i < singleDocPageList.Count; ++i)
+                        {
+                            outputDocument.AddPage(singleDocPageList[i]);
                         }
                     }
                 }
 
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    outputDocument.Save(stream);
-                    outputBytes = stream.ToArray();
-                }
+                return outputDocument;
             }
-            finally
+        }
+
+        public static void TryMergePDFFiles(IEnumerable<byte[]> fileList, string destFilePath, out IList<Exception> errorList, out IList<byte[]> filesInError)
+        {
+            fileList.AssertNotNullAndHasElementsNotNull("fileList");
+            destFilePath.AssertHasText("destFilePath");
+
+            if (fileList.Count() == 1)
             {
-                outputDocument.Close();
+                errorList = new List<Exception>();
+                filesInError = new List<byte[]>();
+                File.WriteAllBytes(destFilePath, fileList.First());
+                return;
             }
 
-            return outputBytes;
+            var streamList =
+                fileList
+                    .Select(x => new KeyedStreamWithValue<byte[]>(new MemoryStream(x), x))
+                    .ToList();
+
+            PdfHelper helper = new PdfHelper();
+            errorList = new List<Exception>();
+            IList<KeyedStreamWithValue<byte[]>> streamsInError = new List<KeyedStreamWithValue<byte[]>>();
+
+            using (PdfDocument document = helper.MergePDFFilesImpl(streamList, out errorList, out streamsInError))
+            {
+                filesInError =
+                    streamsInError
+                        .Join
+                        (
+                            streamList,
+                            x => x.Key,
+                            x => x.Key,
+                            (x, y) => y.Value
+                        )
+                        .ToList();
+
+                document.Save(destFilePath);
+            }
+        }
+
+        public static byte[] TryMergePDFFiles(IEnumerable<byte[]> fileList, out IList<Exception> errorList, out IList<byte[]> filesInError)
+        {
+            fileList.AssertNotNullAndHasElementsNotNull("fileList");
+
+            if (fileList.Count() == 1)
+            {
+                errorList = new List<Exception>();
+                filesInError = new List<byte[]>();
+                return fileList.First();
+            }
+
+            var streamList =
+                fileList
+                    .Select(x => new KeyedStreamWithValue<byte[]>(new MemoryStream(x), x))
+                    .ToList();
+
+            PdfHelper helper = new PdfHelper();
+            errorList = new List<Exception>();
+            IList<KeyedStreamWithValue<byte[]>> streamsInError = new List<KeyedStreamWithValue<byte[]>>();
+
+            using (PdfDocument document = helper.MergePDFFilesImpl(streamList, out errorList, out streamsInError))
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    filesInError =
+                        streamsInError
+                            .Join
+                            (
+                                streamList,
+                                x => x.Key,
+                                x => x.Key,
+                                (x, y) => y.Value
+                            )
+                            .ToList();
+
+                    document.Save(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
+
+        public static void TryMergePDFFiles(IEnumerable<string> filePathList, string destFilePath, out IList<Exception> errorList, out IList<string> filesInError)
+        {
+            filePathList.AssertNotNullAndHasElementsNotNull("filePathList");
+            destFilePath.AssertHasText("destFilePath");
+
+            if (filePathList.Count() == 1)
+            {
+                errorList = new List<Exception>();
+                filesInError = new List<string>();
+                File.Copy(filePathList.First(), destFilePath);
+                return;
+            }
+
+            var streamList =
+                filePathList
+                    .Select(x => new KeyedStreamWithValue<string>(new FileStream(x, FileMode.Open, FileAccess.Read), x))
+                    .ToList();
+
+            PdfHelper helper = new PdfHelper();
+            errorList = new List<Exception>();
+            IList<KeyedStreamWithValue<string>> streamsInError = new List<KeyedStreamWithValue<string>>();
+
+            using (PdfDocument document = helper.MergePDFFilesImpl(streamList, out errorList, out streamsInError))
+            {
+                filesInError =
+                    streamsInError
+                        .Join
+                        (
+                            streamList,
+                            x => x.Key,
+                            x => x.Key,
+                            (x, y) => y.Value
+                        )
+                        .ToList();
+
+                document.Save(destFilePath);
+            }
+        }
+
+        public static byte[] TryMergePDFFiles(IEnumerable<string> filePathList, out IList<Exception> errorList, out IList<string> filesInError)
+        {
+            filePathList.AssertNotNullAndHasElementsNotNull("filePathList");
+
+            if (filePathList.Count() == 1)
+            {
+                errorList = new List<Exception>();
+                filesInError = new List<string>();
+                return File.ReadAllBytes(filePathList.First());
+            }
+
+            var streamList =
+                filePathList
+                    .Select(x => new KeyedStreamWithValue<string>(new FileStream(x, FileMode.Open, FileAccess.Read), x))
+                    .ToList();
+
+            PdfHelper helper = new PdfHelper();
+            errorList = new List<Exception>();
+            IList<KeyedStreamWithValue<string>> streamsInError = new List<KeyedStreamWithValue<string>>();
+
+            using (PdfDocument document = helper.MergePDFFilesImpl(streamList, out errorList, out streamsInError))
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    filesInError =
+                        streamsInError
+                            .Join
+                            (
+                                streamList,
+                                x => x.Key,
+                                x => x.Key,
+                                (x, y) => y.Value
+                            )
+                            .ToList();
+
+                    document.Save(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
+
+        public static void MergePDFFiles(IEnumerable<byte[]> fileList, string destFilePath)
+        {
+            TryMergePDFFiles(fileList, destFilePath, out IList<Exception> errorList, out IList<byte[]> filesInError);
+
+            if (errorList.Any())
+            {
+                throw new AggregateException("One or more errors occurred in merging PDF files", errorList);
+            }
+        }
+
+        public static byte[] MergePDFFiles(IEnumerable<byte[]> fileList)
+        {
+            var bytes = TryMergePDFFiles(fileList, out IList<Exception> errorList, out IList<byte[]> filesInError);
+
+            if (errorList.Any())
+            {
+                throw new AggregateException("One or more errors occurred in merging PDF files", errorList);
+            }
+
+            return bytes;
+        }
+
+        public static void MergePDFFiles(IEnumerable<string> filePathList, string destFilePath)
+        {
+            TryMergePDFFiles(filePathList, destFilePath, out IList<Exception> errorList, out IList<string> filesInError);
+
+            if (errorList.Any())
+            {
+                throw new AggregateException("One or more errors occurred in merging PDF files", errorList);
+            }
+        }
+
+        public static byte[] MergePDFFiles(IEnumerable<string> filePathList)
+        {
+            var bytes = TryMergePDFFiles(filePathList, out IList<Exception> errorList, out IList<string> filesInError);
+
+            if (errorList.Any())
+            {
+                throw new AggregateException("One or more errors occurred in merging PDF files", errorList);
+            }
+
+            return bytes;
         }
     }
 }
