@@ -25,11 +25,9 @@ namespace GenericCore.DataAccess
             }
         }
 
-        public BaseDAO(IGenericDatabaseFactory factory)
+        public BaseDAO(IGenericDatabaseFactory factory = null)
         {
-            factory.AssertNotNull(nameof(factory));
-
-            Factory = factory;
+            Factory = factory ?? new GenericDatabaseFactory();
             SqlParametersManager = new SqlParametersManager(Factory.DAOHelper);
         }
 

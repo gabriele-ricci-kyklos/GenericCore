@@ -114,8 +114,7 @@ namespace GenericCore.Test.DataAccess
 
     class MyDAO : BaseDAO
     {
-        public MyDAO()
-            : base(new GenericDatabaseFactory())
+        public MyDAO() : base()
         {
         }
 

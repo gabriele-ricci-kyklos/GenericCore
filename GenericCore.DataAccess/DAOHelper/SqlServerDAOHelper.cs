@@ -11,7 +11,6 @@ namespace GenericCore.DataAccess.DAOHelper
     public class SqlServerDAOHelper : IDAOHelper
     {
         private readonly static IDictionary<Type, DbType> _typeToDbMapping;
-        private string _providerInvariantName;
 
         public string ParameterStartPrefix
         {
@@ -21,13 +20,7 @@ namespace GenericCore.DataAccess.DAOHelper
             }
         }
 
-        public string ProviderInvariantName
-        {
-            get
-            {
-                return _providerInvariantName;
-            }
-        }
+        public string ProviderInvariantName { get; }
 
         public string EscapeField(string fieldName)
         {
@@ -89,7 +82,7 @@ namespace GenericCore.DataAccess.DAOHelper
         public SqlServerDAOHelper(string providerName)
         {
             providerName.AssertHasText("providerName");
-            _providerInvariantName = providerName;
+            ProviderInvariantName = providerName;
         }
     }
 }
