@@ -25,26 +25,6 @@ namespace GenericCore.Support
             return !o.IsNull();
         }
 
-        public static void AssertNotNull(this object o, string varName)
-        {
-            if (o.IsNull())
-            {
-                throw new ArgumentNullException(varName);
-            }
-        }
-
-        public static void AssertHasText(this string argument, string name, string message = null)
-        {
-            if (argument.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(
-                    name,
-                    string.Format(
-                    CultureInfo.InvariantCulture,
-                    message.ToNullIfEmpty() ?? "Argument '{0}' cannot be null or resolve to an empty string : '{1}'.", name, argument));
-            }
-        }
-
         public static T ConvertTo<T>(this object value)
         {
             Type t = typeof(T);

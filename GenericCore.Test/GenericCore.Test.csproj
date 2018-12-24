@@ -85,6 +85,7 @@
     <Compile Include="Support\ExtensionMethods\BitArrayExtensionMethodsTest.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionExtensionMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Support\ExtensionMethods\AssertsExtensionMethodsTests.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethodsTests.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethodsTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
