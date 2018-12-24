@@ -40,9 +40,18 @@ Etiam dictum, augue quis sagittis pulvinar, sapien odio egestas velit, consectet
         [TestMethod]
         public void LZ77Str()
         {
-            string compressed = LZ77String.CompressStr(inputStr);
-            string decompressed = LZ77String.DecompressStr(compressed);
+            string compressed = LZ77.CompressStrings(inputStr, Encoding.ASCII);
+            string decompressed = LZ77.DecompressStrings(compressed, Encoding.ASCII);
             Assert.AreEqual(inputStr, decompressed);
+        }
+
+        [TestMethod]
+        public void LZ77Bytes()
+        {
+            byte[] input = Encoding.UTF8.GetBytes(inputStr);
+            byte[] compressed = LZ77.CompressBytes(input);
+            byte[] decompressed = LZ77.DecompressBytes(compressed);
+            CollectionAssert.AreEqual(input, decompressed);
         }
     }
 }

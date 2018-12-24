@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GenericCore.Compression
 {
-    public class LZ77String
+    public class LZ77
     {
-        static char _referencePrefix = '`';
+        static byte _referencePrefix = (byte)'`';
         static int _referenceIntBase = 96;
         static int _referenceIntFloorCode = ' ';
         static int _referenceIntCeilCode = _referenceIntFloorCode + _referenceIntBase;
@@ -18,24 +18,47 @@ namespace GenericCore.Compression
         static int _maxStringLength = (int)Math.Pow(_referenceIntBase, 1) - 1 + _minStringLength;
         static int _defaultWindowLength = 9220;
         static int _maxWindowLength = _maxStringDistance + _minStringLength;
-        
-        public static string CompressStr(string data)
+
+        public static byte[] CompressBytes(byte[] data, int windowLength = -1)
         {
-            LZ77String lz = new LZ77String();
-            return lz.Compress(data, -1);
+            LZ77 lz = new LZ77();
+            return lz.Compress(data, windowLength);
         }
-        public static string DecompressStr(string data)
+
+        public static byte[] DecompressBytes(byte[] data)
         {
-            LZ77String lz = new LZ77String();
+            LZ77 lz = new LZ77();
             return lz.Decompress(data);
         }
 
-        public string Compress(string data)
+        public static string CompressStrings(string data, Encoding encoding = null, int windowLength = -1)
+        {
+            data.AssertHasText(nameof(data));
+            encoding = encoding ?? Encoding.UTF8;
+            byte[] inputData = encoding.GetBytes(data);
+
+            LZ77 lz = new LZ77();
+            byte[] compressed = lz.Compress(inputData, windowLength);
+            return encoding.GetString(compressed);
+        }
+
+        public static string DecompressStrings(string data, Encoding encoding)
+        {
+            data.AssertHasText(nameof(data));
+            encoding = encoding ?? Encoding.UTF8;
+            byte[] inputData = encoding.GetBytes(data);
+
+            LZ77 lz = new LZ77();
+            byte[] decompressed = lz.Decompress(inputData);
+            return encoding.GetString(decompressed);
+        }
+
+        public byte[] Compress(byte[] data)
         {
             return Compress(data, -1);
         }
 
-        public string Compress(string data, int windowLength)
+        public byte[] Compress(byte[] data, int windowLength)
         {
             if (windowLength == -1)
             {
@@ -47,7 +70,7 @@ namespace GenericCore.Compression
                 throw new ArgumentException("Window length is too large.");
             }
 
-            string compressed = string.Empty;
+            List<byte> compressed = new List<byte>();
 
             int pos = 0;
             int lastPos = data.Length - _minStringLength;
@@ -61,17 +84,17 @@ namespace GenericCore.Compression
                 bool foundMatch = false;
                 int bestMatchDistance = _maxStringDistance;
                 int bestMatchLength = 0;
-                string newCompressed = null;
+                List<byte> newCompressed = new List<byte>();
 
                 while ((searchStart + matchLength) < pos)
                 {
                     int sourceWindowEnd = Math.Min(searchStart + matchLength, data.Length);
                     int targetWindowEnd = Math.Min(pos + matchLength, data.Length);
 
-                    string m1 = data.Substring(searchStart, sourceWindowEnd - searchStart);
-                    string m2 = data.Substring(pos, targetWindowEnd - pos);
+                    var s1 = new ArraySegment<byte>(data, searchStart, sourceWindowEnd - searchStart) as IList<byte>;
+                    var s2 = new ArraySegment<byte>(data, pos, targetWindowEnd - pos) as IList<byte>;
 
-                    bool isValidMatch = m1.Equals(m2) && matchLength < _maxStringLength;
+                    bool isValidMatch = s1.SequenceEqual(s2) && matchLength < _maxStringLength;
 
                     if (isValidMatch)
                     {
@@ -96,9 +119,9 @@ namespace GenericCore.Compression
 
                 if (bestMatchLength != 0)
                 {
-                    newCompressed = _referencePrefix
-                            + EncodeReferenceInt(bestMatchDistance, 2)
-                            + EncodeReferenceLength(bestMatchLength);
+                    newCompressed.Add(_referencePrefix);
+                    newCompressed.AddRange(EncodeReferenceInt(bestMatchDistance, 2));
+                    newCompressed.AddRange(EncodeReferenceLength(bestMatchLength));
 
                     pos += bestMatchLength;
                 }
@@ -106,86 +129,95 @@ namespace GenericCore.Compression
                 {
                     if (data[pos] != _referencePrefix)
                     {
-                        newCompressed = string.Empty + data[pos];
+                        newCompressed = new List<byte>(data[pos].AsArray());
                     }
                     else
                     {
-                        newCompressed = string.Empty + _referencePrefix + _referencePrefix;
+                        newCompressed = new List<byte>(new byte[] { _referencePrefix, _referencePrefix });
                     }
 
                     pos++;
                 }
 
-                compressed += newCompressed;
+                compressed.AddRange(newCompressed);
 
                 //Console.WriteLine("{0}", w.ElapsedMilliseconds);
             }
 
-            return compressed + data.Substring(pos).Replace(_referencePrefix.ToString(), string.Format("{0}{1}", _referencePrefix, _referencePrefix));
+            var slice = new ArraySegment<byte>(data, pos, data.Length - pos) as IList<byte>;
+            for(int i = 0; i < slice.Count; ++i)
+            {
+                if(slice[i] == _referencePrefix)
+                {
+                    compressed.Add(_referencePrefix);
+                }
+
+                compressed.Add(slice[i]);
+            }
+
+            return compressed.ToArray();
         }
 
-        public string Decompress(string data)
+        public byte[] Decompress(byte[] data)
         {
-            string decompressed = "";
+            List<byte> decompressed = new List<byte>();
             int pos = 0;
 
             while (pos < data.Length)
             {
+                byte currentByte = data[pos];
 
-                char currentChar = data[pos];
-
-                if (currentChar != _referencePrefix)
+                if (currentByte != _referencePrefix)
                 {
-                    decompressed += currentChar;
+                    decompressed.Add(currentByte);
                     pos++;
+                    continue;
                 }
-                else
+
+                byte nextByte = data[pos + 1];
+
+                if (nextByte != _referencePrefix)
                 {
+                    var s1 = new ArraySegment<byte>(data, pos + 1, 2) as IList<byte>;
+                    var s2 = new ArraySegment<byte>(data, pos + 3, 1) as IList<byte>;
 
-                    char nextChar = data[pos + 1];
+                    int distance = DecodeReferenceInt(s1, 2);
+                    int length = DecodeReferenceLength(s2);
+                    int start = decompressed.Count - distance - length;
+                    int end = start + length;
 
-                    if (nextChar != _referencePrefix)
-                    {
-
-                        int distance = DecodeReferenceInt(data.Substring(pos + 1, 2), 2);
-                        int length = DecodeReferenceLength(data.Substring(pos + 3, 1));
-                        int start = decompressed.Length - distance - length;
-                        int end = start + length;
-
-                        decompressed += decompressed.Substring(start, end - start);
-                        pos += _minStringLength - 1;
-
-                    }
-                    else
-                    {
-                        decompressed += _referencePrefix;
-                        pos += 2;
-                    }
+                    var s3 = new ArraySegment<byte>(decompressed.ToArray(), start, end - start) as IList<byte>;
+                    decompressed.AddRange(s3);
+                    pos += _minStringLength - 1;
+                    continue;
                 }
+
+                decompressed.Add(_referencePrefix);
+                pos += 2;
             }
 
-            return decompressed;
+            return decompressed.ToArray();
         }
 
-        private string EncodeReferenceInt(int value, int width)
+        private IList<byte> EncodeReferenceInt(int value, int width)
         {
             if ((value >= 0) && (value < (Math.Pow(_referenceIntBase, width) - 1)))
             {
-                string encoded = string.Empty;
+                IList<byte> encoded = new List<byte>();
 
                 while (value > 0)
                 {
-                    char c = (char)((value % _referenceIntBase) + _referenceIntFloorCode);
-                    encoded = string.Format("{0}{1}", c, encoded);//string.Empty + c + encoded;
+                    byte b = (byte)((value % _referenceIntBase) + _referenceIntFloorCode);
+                    encoded.Insert(0, b);
                     value = (int)Math.Floor((double)value / _referenceIntBase);
                 }
 
-                int missingLength = width - encoded.Length;
+                int missingLength = width - encoded.Count;
 
                 for (int i = 0; i < missingLength; i++)
                 {
-                    char c = (char)_referenceIntFloorCode;
-                    encoded = string.Empty + c + encoded;
+                    byte b = (byte)_referenceIntFloorCode;
+                    encoded.Insert(0, b);
                 }
 
                 return encoded;
@@ -196,32 +228,27 @@ namespace GenericCore.Compression
             }
         }
 
-        private string EncodeReferenceLength(int length)
+        private IList<byte> EncodeReferenceLength(int length)
         {
             return EncodeReferenceInt(length - _minStringLength, 1);
         }
 
-        private int DecodeReferenceInt(string data, int width)
+        private int DecodeReferenceInt(IList<byte> data, int width)
         {
             int value = 0;
 
             for (int i = 0; i < width; i++)
             {
-
                 value *= _referenceIntBase;
 
                 int charCode = (int)data[i];
 
-                if ((charCode >= _referenceIntFloorCode)
-                        && (charCode <= _referenceIntCeilCode))
+                if ((charCode >= _referenceIntFloorCode) && (charCode <= _referenceIntCeilCode))
                 {
-
                     value += charCode - _referenceIntFloorCode;
-
                 }
                 else
                 {
-
                     throw new ArgumentException("Invalid char code in reference int: " + charCode);
                 }
             }
@@ -229,7 +256,7 @@ namespace GenericCore.Compression
             return value;
         }
 
-        private int DecodeReferenceLength(string data)
+        private int DecodeReferenceLength(IList<byte> data)
         {
             return DecodeReferenceInt(data, 1) + _minStringLength;
         }
