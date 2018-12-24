@@ -27,140 +27,174 @@ namespace GenericCore.Support
             }
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet)
-            where T : new()
+        #region Convert to entity or list
+
+        // ToEntityList DataRow[]
+
+        public static IEnumerable<T> ToEntityList<T>(this DataRow[] rows, bool throwIfPropertyNotFound = false) where T : new()
         {
-            return ConvertDataSetToListImpl<T>(dataSet, false, StringComparison.InvariantCultureIgnoreCase, null, null);
+            return ToEntityList<T>(rows, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataRow[] rows, bool throwIfPropertyNotFound, StringComparison propertyNameComparison) where T : new()
         {
-            return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
+            return ToEntityList<T>(rows, throwIfPropertyNotFound, propertyNameComparison, null, null);
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataRow[] rows, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap) where T : new()
         {
-            return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, null, null);
+            return ToEntityList<T>(rows, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataRow[] rows, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap) where T : new()
         {
-            return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
+            return ToEntityList<T>(rows, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataRow[] rows, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap) where T : new()
         {
-            return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
+            return
+                ToEntityList(rows, typeof(T), throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap)
+                .Cast<T>();
         }
 
-        public static IList<IList<T>> ToEntityMatrix<T>(this DataSet dataSet, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<object> ToEntityList(this DataRow[] rows, Type type, bool throwIfPropertyNotFound = false)
         {
-            return ConvertDataSetToListImpl<T>(dataSet, throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap);
+            return ToEntityList(rows, type, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        private static IList<IList<T>> ConvertDataSetToListImpl<T>(DataSet ds, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<object> ToEntityList(this DataRow[] rows, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
         {
-            ds.AssertNotNull("ds");
+            return ToEntityList(rows, type, throwIfPropertyNotFound, propertyNameComparison, null, null);
+        }
 
-            IList<IList<T>> resultMatrix = new List<IList<T>>();
+        public static IEnumerable<object> ToEntityList(this DataRow[] rows, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
+        {
+            return ToEntityList(rows, type, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
+        }
 
-            foreach (DataTable dt in ds.Tables)
+        public static IEnumerable<object> ToEntityList(this DataRow[] rows, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
+        {
+            return ToEntityList(rows, type, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
+        }
+
+        public static IEnumerable<object> ToEntityList(this DataRow[] rows, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
+        {
+            foreach (DataRow dr in rows)
             {
-                IList<T> resultList = ConvertDataTableToListImpl<T>(dt, throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap);
-                resultMatrix.Add(resultList);
+                object newRow = ToEntity(dr, type, throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap);
+                yield return newRow;
             }
-
-            return resultMatrix;
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable)
-            where T : new()
+        // ToEntityList DataTable
+
+        public static IEnumerable<T> ToEntityList<T>(this DataTable table, bool throwIfPropertyNotFound = false) where T : new()
         {
-            return ConvertDataTableToListImpl<T>(dataTable, false, StringComparison.InvariantCultureIgnoreCase, null, null);
+            return ToEntityList<T>(table, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable, bool throwIfPropertyNotFound)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataTable table, bool throwIfPropertyNotFound, StringComparison propertyNameComparison) where T : new()
         {
-            return ConvertDataTableToListImpl<T>(dataTable, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
+            return ToEntityList<T>(table, throwIfPropertyNotFound, propertyNameComparison, null, null);
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataTable table, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap) where T : new()
         {
-            return ConvertDataTableToListImpl<T>(dataTable, throwIfPropertyNotFound, propertyNameComparison, null, null);
+            return ToEntityList<T>(table, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataTable table, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap) where T : new()
         {
-            return ConvertDataTableToListImpl<T>(dataTable, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
+            return ToEntityList<T>(table, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<T> ToEntityList<T>(this DataTable table, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap) where T : new()
         {
-            return ConvertDataTableToListImpl<T>(dataTable, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
+            return
+                ToEntityList(table, typeof(T), throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap)
+                    .Cast<T>();
         }
 
-        public static IList<T> ToEntityList<T>(this DataTable dataTable, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<object> ToEntityList(this DataTable table, Type type, bool throwIfPropertyNotFound = false)
         {
-            return ConvertDataTableToListImpl<T>(dataTable, throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap);
+            return ToEntityList(table, type, throwIfPropertyNotFound, StringComparison.InvariantCultureIgnoreCase, null, null);
         }
 
-        private static IList<T> ConvertDataTableToListImpl<T>(DataTable dataTable, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
-            where T : new()
+        public static IEnumerable<object> ToEntityList(this DataTable table, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison)
         {
-            dataTable.AssertNotNull("dataTable");
+            return ToEntityList(table, type, throwIfPropertyNotFound, propertyNameComparison, null, null);
+        }
 
-            PropertyInfo[] properties = typeof(T).GetProperties();
+        public static IEnumerable<object> ToEntityList(this DataTable table, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap)
+        {
+            return ToEntityList(table, type, throwIfPropertyNotFound, propertyNameComparison, typesMap, null);
+        }
 
-            if (properties.IsNullOrEmptyList())
+        public static IEnumerable<object> ToEntityList(this DataTable table, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<string, string> propertyNamesMap)
+        {
+            return ToEntityList(table, type, throwIfPropertyNotFound, propertyNameComparison, null, propertyNamesMap);
+        }
+
+        public static IEnumerable<object> ToEntityList(this DataTable table, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
+        {
+            table.AssertNotNull("table");
+
+            foreach (DataRow row in table.Rows)
             {
-                return new List<T>();
+                yield return ToEntity(row, type, throwIfPropertyNotFound, propertyNameComparison, typesMap, propertyNamesMap);
             }
+        }
 
-            IList<T> returnList = new List<T>();
+        public static object ToEntity(this DataRow tableRow, Type type, bool throwIfPropertyNotFound, StringComparison propertyNameComparison, IDictionary<Type, Func<object, object>> typesMap, IDictionary<string, string> propertyNamesMap)
+        {
+            object returnObj = Activator.CreateInstance(type);
 
-            foreach (DataRow row in dataTable.Rows)
+            PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (DataColumn col in tableRow.Table.Columns)
             {
-                T returnObj = new T();
+                PropertyInfo propertyInfo = null;
+                FieldInfo fieldInfo = null;
 
-                foreach (DataColumn col in dataTable.Columns)
+                string mappedPropertyName = null;
+
+                if (!propertyNamesMap.IsNullOrEmptyList() && propertyNamesMap.ContainsKey(col.ColumnName))
                 {
-                    PropertyInfo propertyInfo = null;
-                    string mappedPropertyName = null;
+                    mappedPropertyName = propertyNamesMap[col.ColumnName];
+                }
 
-                    if (!propertyNamesMap.IsNullOrEmptyList() && propertyNamesMap.ContainsKey(col.ColumnName))
+                propertyInfo = properties.FirstOrDefault(x => x.Name.Equals(mappedPropertyName ?? col.ColumnName, propertyNameComparison));
+
+                Func<object, Type, object> defaultConverter = (obj, t) => obj.ConvertTo(t);
+                Func<object, Type, object> typesMapConverter = (obj, t) => typesMap[t];
+                Func<object, Type, object> cellConverter = typesMap.IsNullOrEmptyList() ? defaultConverter : typesMapConverter;
+
+                if (!propertyInfo.IsNull())
+                {
+                    object value = cellConverter(tableRow[col], propertyInfo.PropertyType);
+                    returnObj.SetPropertyValue(propertyInfo.Name, value);
+                }
+                else
+                {
+                    fieldInfo = fields.FirstOrDefault(x => x.Name.Equals(mappedPropertyName ?? col.ColumnName, propertyNameComparison));
+
+                    if (fieldInfo.IsNotNull())
                     {
-                        mappedPropertyName = propertyNamesMap[col.ColumnName];
-                    }
-
-                    propertyInfo = properties.FirstOrDefault(x => x.Name.Equals((mappedPropertyName ?? col.ColumnName), propertyNameComparison));
-
-                    if (!propertyInfo.IsNull())
-                    {
-                        Func<object, object> converter = (typesMap.IsNullOrEmptyList()) ? (obj) => obj.ConvertTo(propertyInfo.PropertyType) : typesMap[propertyInfo.PropertyType];
-                        object value = converter(row[col]);
-                        returnObj.SetPropertyValue(propertyInfo.Name, value);
+                        object value = cellConverter(tableRow[col], fieldInfo.FieldType);
+                        returnObj.SetFieldValue(fieldInfo.Name, value);
                     }
                     else if (throwIfPropertyNotFound)
                     {
                         throw new ArgumentException($"The property '{col.ColumnName}' has not been found using the comparison '{propertyNameComparison}'");
                     }
                 }
-
-                returnList.Add(returnObj);
             }
 
-            return returnList;
+            return returnObj;
         }
+
+        #endregion
     }
 }

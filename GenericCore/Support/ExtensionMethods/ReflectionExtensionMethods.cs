@@ -100,5 +100,20 @@ namespace GenericCore.Support
             propInfo.SetValue(target, value, null);
             return true;
         }
+
+        public static bool SetFieldValue(this object target, string propertyName, object value)
+        {
+            if (target == null)
+            {
+                return false;
+            }
+            var fieldInfo = target.GetType().GetField(propertyName);
+            if (fieldInfo == null)
+            {
+                return false;
+            }
+            fieldInfo.SetValue(target, value);
+            return true;
+        }
     }
 }
