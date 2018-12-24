@@ -14,7 +14,7 @@ namespace GenericCore.Serialization.Xml
 {
     public static class QuickXmlSerializer
     {
-        public static string GetXMLFromObject<T>(T o)
+        public static string SerializeObject<T>(T o)
         {
             StringWriter sw = new StringWriter();
             XmlTextWriter tw = null;
@@ -37,8 +37,10 @@ namespace GenericCore.Serialization.Xml
             return sw.ToString();
         }
 
-        public static T ObjectToXML<T>(string xml)
+        public static T DeserializeObject<T>(string xml)
         {
+            xml.AssertHasText("xml");
+
             StringReader strReader = null;
             XmlSerializer serializer = null;
             XmlTextReader xmlReader = null;

@@ -13,10 +13,10 @@ namespace GenericCore.Test.Serialization
         public void TestQuickXmlSerializer()
         {
             QuickXmlSerializerTestClass testObj = new QuickXmlSerializerTestClass { Value = "lol", Number = 1 };
-            string xml = QuickXmlSerializer.GetXMLFromObject(testObj);
+            string xml = QuickXmlSerializer.SerializeObject(testObj);
             Assert.IsNotNull(xml);
 
-            QuickXmlSerializerTestClass deserializedObj = QuickXmlSerializer.ObjectToXML<QuickXmlSerializerTestClass>(xml);
+            QuickXmlSerializerTestClass deserializedObj = QuickXmlSerializer.DeserializeObject<QuickXmlSerializerTestClass>(xml);
             Assert.AreEqual(testObj, deserializedObj);
         }
 
@@ -24,7 +24,7 @@ namespace GenericCore.Test.Serialization
         public void TestQuickXmlSerializerDynamic()
         {
             QuickXmlSerializerTestClass testObj = new QuickXmlSerializerTestClass { Value = "lol", Number = 1 };
-            string xml = QuickXmlSerializer.GetXMLFromObject(testObj);
+            string xml = QuickXmlSerializer.SerializeObject(testObj);
             Assert.IsNotNull(xml);
 
             IDictionary<string, object> deserializedObj = QuickXmlSerializer.GetDynamicObjectFromXml(xml);
