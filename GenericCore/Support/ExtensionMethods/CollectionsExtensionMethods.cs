@@ -1,5 +1,4 @@
-﻿using GenericCore.Collections.Dictionaries;
-using GenericCore.Support.Collections;
+﻿using GenericCore.Support.Collections;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
