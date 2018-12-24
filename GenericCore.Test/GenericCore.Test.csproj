@@ -77,7 +77,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Collections\CollectionsTest.cs" />
-    <Compile Include="Compression\LZWTest.cs" />
+    <Compile Include="Compression\CompressionTest.cs" />
     <Compile Include="Cryptography\CryptographyTests.cs" />
     <Compile Include="DataAccess\DataAccessTests.cs" />
     <Compile Include="StateMachine\StateMachineTests.cs" />

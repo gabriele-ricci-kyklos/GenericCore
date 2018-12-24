@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GenericCore.Compression.LZW
+namespace GenericCore.Compression
 {
     /*
      * Started using the code from https://rosettacode.org/wiki/LZW_compression#C.23
