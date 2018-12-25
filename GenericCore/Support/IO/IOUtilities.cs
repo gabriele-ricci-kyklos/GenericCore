@@ -17,6 +17,11 @@ namespace GenericCore.Support
             bool errors = false;
             DirectoryInfo dir = new DirectoryInfo(pathName);
 
+            if(!dir.Exists)
+            {
+                return false;
+            }
+
             foreach (FileInfo fi in dir.EnumerateFiles())
             {
                 try
@@ -31,17 +36,27 @@ namespace GenericCore.Support
                         fi.Refresh();
                     }
                 }
-                catch (IOException)
+                catch (Exception)
                 {
                     errors = true;
                 }
             }
 
+            IList<DirectoryInfo> diList = new List<DirectoryInfo>();
+            IList<Task<bool>> taskList = new List<Task<bool>>();
+
             foreach (DirectoryInfo di in dir.EnumerateDirectories())
+            {
+                taskList.Add(Task.Factory.StartNew(() => EmptyFolder(di.FullName)));
+                diList.Add(di);
+            }
+
+            Task.WaitAll(taskList.ToArray());
+
+            foreach (DirectoryInfo di in diList)
             {
                 try
                 {
-                    EmptyFolder(di.FullName);
                     di.Delete();
 
                     //Wait for the item to disapear (avoid 'dir not empty' error).
@@ -51,10 +66,15 @@ namespace GenericCore.Support
                         di.Refresh();
                     }
                 }
-                catch (IOException)
+                catch (Exception)
                 {
                     errors = true;
                 }
+            }
+
+            if(taskList.Any(x => !x.Result))
+            {
+                errors = true;
             }
 
             return !errors;
@@ -67,8 +87,15 @@ namespace GenericCore.Support
                 return false;
             }
 
-            Directory.Delete(pathName, true);
-            return true;
+            try
+            {
+                Directory.Delete(pathName, true);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

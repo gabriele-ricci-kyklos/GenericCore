@@ -47,6 +47,12 @@ namespace GenericCore.Test.Support.Strings
             Assert.AreEqual(120, getRentPrice.Match(vehicles[3]));
             Assert.AreEqual(130, getRentPrice.Match(vehicles[4]));
         }
+
+        [TestMethod]
+        public void IOUtilitiesTest()
+        {
+            IOUtilities.EmptyFolder(@"C:\temp");
+        }
     }
 
     public enum EngineType
