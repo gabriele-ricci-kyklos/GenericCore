@@ -7,13 +7,89 @@ using System.Threading.Tasks;
 
 namespace GenericCore.Support
 {
-    //credits: https://stackoverflow.com/a/50405099/4499267
-
-    //TODO: do some tests
     public class IOUtilities
     {
+        //guidelines: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories
+        public static bool CopyFolderTo(string sourcePath, string destPath, bool overwiteFiles = false, bool copySubDirectories = true)
+        {
+            sourcePath.AssertHasText(nameof(sourcePath));
+            destPath.AssertHasText(nameof(destPath));
+
+            DirectoryInfo sourceDir = new DirectoryInfo(sourcePath);
+            DirectoryInfo destDir = new DirectoryInfo(destPath);
+
+            if(!sourceDir.Exists)
+            {
+                throw new DirectoryNotFoundException($"The directory {sourcePath} has not been found");
+            }
+
+            if(!destDir.Exists)
+            {
+                destDir.Create();
+            }
+
+            IList<Task<bool>> taskList = new List<Task<bool>>();
+
+            foreach (FileInfo fi in sourceDir.EnumerateFiles())
+            {
+                taskList
+                    .Add
+                    (
+                        Task.Factory.StartNew(() =>
+                        {
+                            try
+                            {
+                                string tempPath = Path.Combine(destDir.FullName, fi.Name);
+                                fi.CopyTo(tempPath, overwiteFiles);
+                                return true;
+                            }
+                            catch (Exception)
+                            {
+                                return false;
+                            }
+                        })
+                    );
+            }
+
+            if(copySubDirectories)
+            {
+                foreach (DirectoryInfo di in sourceDir.EnumerateDirectories())
+                {
+                    taskList
+                        .Add
+                        (
+                            Task.Factory.StartNew(() =>
+                            {
+                                try
+                                {
+                                    string tempPath = Path.Combine(destPath, di.Name);
+                                    CopyFolderTo(di.FullName, tempPath, overwiteFiles, true);
+                                    return true;
+                                }
+                                catch (Exception)
+                                {
+                                    return false;
+                                }
+                            })
+                        );
+                }
+            }
+
+            Task.WaitAll(taskList.ToArray());
+
+            if (taskList.Any(x => !x.Result))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        //credits: https://stackoverflow.com/a/50405099/4499267
         public static bool EmptyFolder(string pathName)
         {
+            pathName.AssertHasText(nameof(pathName));
+
             bool errors = false;
             DirectoryInfo dir = new DirectoryInfo(pathName);
 
