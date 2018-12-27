@@ -3,6 +3,7 @@ using GenericCore.Support.Strings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace GenericCore.Test.Support.Strings
         [TestMethod]
         public void PatternMatcherTest()
         {
-            PatternMatcher<int> getRentPrice = 
+            PatternMatcher<int> getRentPrice =
                 new PatternMatcher<int>()
                     .Case<MotorCycle>(bike => 100 + bike.Cylinders * 10)
                     .Case<Bicycle>(30)

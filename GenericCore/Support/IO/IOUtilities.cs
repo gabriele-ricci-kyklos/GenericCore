@@ -18,12 +18,12 @@ namespace GenericCore.Support
             DirectoryInfo sourceDir = new DirectoryInfo(sourcePath);
             DirectoryInfo destDir = new DirectoryInfo(destPath);
 
-            if(!sourceDir.Exists)
+            if (!sourceDir.Exists)
             {
                 throw new DirectoryNotFoundException($"The directory {sourcePath} has not been found");
             }
 
-            if(!destDir.Exists)
+            if (!destDir.Exists)
             {
                 destDir.Create();
             }
@@ -51,7 +51,7 @@ namespace GenericCore.Support
                     );
             }
 
-            if(copySubDirectories)
+            if (copySubDirectories)
             {
                 foreach (DirectoryInfo di in sourceDir.EnumerateDirectories())
                 {
@@ -93,7 +93,7 @@ namespace GenericCore.Support
             bool errors = false;
             DirectoryInfo dir = new DirectoryInfo(pathName);
 
-            if(!dir.Exists)
+            if (!dir.Exists)
             {
                 return false;
             }
@@ -148,7 +148,7 @@ namespace GenericCore.Support
                 }
             }
 
-            if(taskList.Any(x => !x.Result))
+            if (taskList.Any(x => !x.Result))
             {
                 errors = true;
             }
@@ -158,7 +158,7 @@ namespace GenericCore.Support
 
         public static bool DeleteFolder(string pathName)
         {
-            if(!EmptyFolder(pathName))
+            if (!EmptyFolder(pathName))
             {
                 return false;
             }
@@ -167,50 +167,6 @@ namespace GenericCore.Support
             {
                 Directory.Delete(pathName, true);
                 return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        
-        public static bool IsFolder(string path)
-        {
-            if (Directory.Exists(path)
-                // use system values rather than assume slashes
-                || path.EndsWith("" + Path.DirectorySeparatorChar)
-                || path.EndsWith("" + Path.AltDirectorySeparatorChar))
-                return true;
-
-            // if we know for sure that it's an actual file...
-            if (File.Exists(path))
-                return false;
-
-            try
-            {
-                FileAttributes attr = File.GetAttributes(path);
-                return attr.HasFlag(FileAttributes.Directory);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public static bool IsFile(string path)
-        {
-            if (Directory.Exists(path)
-                || path.EndsWith("" + Path.DirectorySeparatorChar)
-                || path.EndsWith("" + Path.AltDirectorySeparatorChar))
-                return false;
-
-            if (File.Exists(path) || Path.HasExtension(path))
-                return true;
-
-            try
-            {
-                FileAttributes attr = File.GetAttributes(path);
-                return !attr.HasFlag(FileAttributes.Directory);
             }
             catch (Exception)
             {
