@@ -160,5 +160,26 @@ namespace GenericCore.Support
             Type type = typeof(T);
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
+
+        public static T? ToEnum<T>(this string s) where T : struct
+        {
+            if (s.IsNullOrBlankString())
+            {
+                return new T?();
+            }
+            
+            if (Enum.TryParse<T>(s, out T result))
+            {
+                return result;
+            }
+
+            return new T?();
+        }
+
+        public static T ToEnum<T>(this string s, T failureValue) where T : struct
+        {
+            T? value = s.ToEnum<T>();
+            return value ?? failureValue;
+        }
     }
 }
