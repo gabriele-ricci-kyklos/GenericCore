@@ -173,5 +173,49 @@ namespace GenericCore.Support
                 return false;
             }
         }
+        
+        public static bool IsFolder(string path)
+        {
+            if (Directory.Exists(path)
+                // use system values rather than assume slashes
+                || path.EndsWith("" + Path.DirectorySeparatorChar)
+                || path.EndsWith("" + Path.AltDirectorySeparatorChar))
+                return true;
+
+            // if we know for sure that it's an actual file...
+            if (File.Exists(path))
+                return false;
+
+            try
+            {
+                FileAttributes attr = File.GetAttributes(path);
+                return attr.HasFlag(FileAttributes.Directory);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public static bool IsFile(string path)
+        {
+            if (Directory.Exists(path)
+                || path.EndsWith("" + Path.DirectorySeparatorChar)
+                || path.EndsWith("" + Path.AltDirectorySeparatorChar))
+                return false;
+
+            if (File.Exists(path) || Path.HasExtension(path))
+                return true;
+
+            try
+            {
+                FileAttributes attr = File.GetAttributes(path);
+                return !attr.HasFlag(FileAttributes.Directory);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
