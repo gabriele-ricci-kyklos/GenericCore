@@ -180,6 +180,6 @@ namespace GenericCore.Support
         {
             T? value = s.ToEnum<T>();
             return value ?? failureValue;
-        }
+        }   
     }
 }

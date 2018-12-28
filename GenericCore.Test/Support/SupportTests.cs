@@ -60,6 +60,22 @@ namespace GenericCore.Test.Support.Strings
         {
             IOUtilities.CopyFolderTo(@"C:\temp\folder1", @"C:\temp\folder2", true, true);
         }
+
+        //credits https://stackoverflow.com/a/40361205/4499267
+        [TestMethod]
+        public void TestGetFileNameFromUriString()
+        {
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("test"), "test");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("test.xml"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("/test.xml"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("/test.xml?q=1"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("/test.xml?q=1&x=3"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("test.xml?q=1&x=3"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("http://www.a.com/test.xml?q=1&x=3"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("http://www.a.com/test.xml?q=1&x=3#aidjsf"), "test.xml");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("http://www.a.com/a/b/c/d"), "d");
+            Assert.AreEqual(Utilities.GetFileNameFromUriString("http://www.a.com/a/b/c/d/e/"), string.Empty);
+        }
     }
 
     public enum EngineType
