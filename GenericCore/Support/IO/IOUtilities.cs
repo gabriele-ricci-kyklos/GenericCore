@@ -35,7 +35,7 @@ namespace GenericCore.Support
                 taskList
                     .Add
                     (
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             try
                             {
@@ -58,7 +58,7 @@ namespace GenericCore.Support
                     taskList
                         .Add
                         (
-                            Task.Factory.StartNew(() =>
+                            Task.Run(() =>
                             {
                                 try
                                 {
@@ -123,7 +123,7 @@ namespace GenericCore.Support
 
             foreach (DirectoryInfo di in dir.EnumerateDirectories())
             {
-                taskList.Add(Task.Factory.StartNew(() => EmptyFolder(di.FullName)));
+                taskList.Add(Task.Run(() => EmptyFolder(di.FullName)));
                 diList.Add(di);
             }
 
