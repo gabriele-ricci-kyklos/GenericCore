@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GenericCore.Support.Web
 {
@@ -70,6 +71,39 @@ namespace GenericCore.Support.Web
             }
 
             return succeded;
+        }
+
+        public async static Task<byte[]> DownloadFileAsync(string fileUrl, IProgress<double> progress = null)
+        {
+            fileUrl.AssertNotNull("fileUrl");
+
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadProgressChanged += (sender, e) =>
+                {
+                    if (progress.IsNull())
+                    {
+                        return;
+                    }
+
+                    double bytesIn = e.BytesReceived.ConvertTo<double>();
+                    double totalBytes = e.TotalBytesToReceive.ConvertTo<double>();
+                    double percentage = bytesIn / totalBytes * 100;
+                    progress.Report(percentage);
+                };
+
+                client.DownloadFileCompleted += (sender, e) =>
+                {
+                    if (progress.IsNull())
+                    {
+                        return;
+                    }
+
+                    progress.Report(100);
+                };
+
+                return await client.DownloadDataTaskAsync(new Uri(fileUrl));
+            }
         }
     }
 }
