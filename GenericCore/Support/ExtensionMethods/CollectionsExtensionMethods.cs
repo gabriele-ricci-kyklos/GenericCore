@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 
 namespace GenericCore.Support
 {
@@ -362,6 +361,85 @@ namespace GenericCore.Support
                 array[i] = array[j];
                 array[j] = temp;
             }
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
+        {
+            dict.AssertNotNull(nameof(dict));
+            
+            if (dict.TryGetValue(key, out TValue existingValue))
+            {
+                return existingValue;
+            }
+            else
+            {
+                return value;
+            }
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> items, TKey key, TValue value)
+        {
+            items.AssertNotNull(nameof(items));
+
+            IDictionary<TKey, TValue> dict = items as IDictionary<TKey, TValue>;
+
+            if (dict.IsNull())
+            {
+                throw new InvalidCastException("Unable to cast the collection 'items' to IDictionary<TKey, TValue>");
+            }
+
+            if (dict.TryGetValue(key, out TValue existingValue))
+            {
+                return existingValue;
+            }
+            else
+            {
+                return value;
+            }
+        }
+
+        public static ReadOnlyDictionary<TKey, TSource> ToReadOnlyDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            Dictionary<TKey, TSource> dict = source.ToDictionary(keySelector);
+            return dict.AsReadOnly();
+        }
+
+        public static ReadOnlyDictionary<TKey, TSource> ToReadOnlyDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        {
+            Dictionary<TKey, TSource> dict = source.ToDictionary(keySelector, comparer);
+            return dict.AsReadOnly();
+        }
+
+        public static ReadOnlyDictionary<TKey, TElement> ToReadOnlyDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+        {
+            Dictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector);
+            return dict.AsReadOnly();
+        }
+
+        public static ReadOnlyDictionary<TKey, TElement> ToReadOnlyDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        {
+            Dictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector, comparer);
+            return dict.AsReadOnly();
+        }
+
+        public static ReadOnlyDictionary<TKey, TResult> ToReadOnlyDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
+        {
+            if (itemList.IsNullOrEmptyList())
+            {
+                return new ReadOnlyDictionary<TKey, TResult>(new Dictionary<TKey, TResult>());
+            }
+
+            return itemList.ToReadOnlyDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static ReadOnlyDictionary<TKey, TElement> ToReadOnlyDictionary<TSource, TKey, TElement>(this IEnumerable<KeyValuePair<TKey, TElement>> itemList, IEqualityComparer<TKey> comparer)
+        {
+            if (itemList.IsNullOrEmptyList())
+            {
+                return new ReadOnlyDictionary<TKey, TElement>(new Dictionary<TKey, TElement>(comparer));
+            }
+
+            return itemList.ToReadOnlyDictionary(x => x.Key, x => x.Value, comparer);
         }
     }
 }
