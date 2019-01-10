@@ -24,19 +24,19 @@ namespace GenericCore.Support
         public static IDictionary<TKey, TValue> Find<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IList<TKey> keyList)
         {
             dictionary.AssertNotNull("dictionary");
-            keyList.AssertNotNull("keyList");
+            keyList.AssertNotNullAndHasElementsNotNull("keyList");
 
-            IList<KeyValuePair<TKey, TValue>> resultList = new List<KeyValuePair<TKey, TValue>>();
+            IDictionary<TKey, TValue> returnDict = new Dictionary<TKey, TValue>();
 
-            foreach (KeyValuePair<TKey, TValue> item in dictionary)
+            foreach (TKey key in keyList)
             {
-                if (keyList.Contains(item.Key))
+                if(dictionary.TryGetValue(key, out TValue value))
                 {
-                    resultList.Add(item);
+                    returnDict.Add(key, value);
                 }
             }
 
-            return resultList.ToDictionary(x => x.Key, x => x.Value);
+            return returnDict;
         }
 
         public static bool IsNullOrEmptyList<T>(this IList<T> list)
@@ -202,7 +202,7 @@ namespace GenericCore.Support
             return (list.IsNull() || !list.Any());
         }
 
-        public static IDictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
+        public static Dictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
         {
             itemList.AssertNotNull("itemList");
 
