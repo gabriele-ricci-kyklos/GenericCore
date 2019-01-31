@@ -48,7 +48,7 @@ namespace GenericCore.Test.Collections
         public void DistinctByTests()
         {
             var list = GetTestList();
-            var distinct = list.DistinctBy(x => x.ID);
+            var distinct = list.Distinct(x => x.ID);
 
             Assert.IsTrue(distinct.Count() == 2);
             Assert.IsTrue(distinct.First().ID == 1);

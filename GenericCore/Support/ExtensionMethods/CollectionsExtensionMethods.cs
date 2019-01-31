@@ -1,4 +1,5 @@
 ﻿using GenericCore.Support.Collections;
+using GenericCore.Support.EqualityComparers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -262,19 +263,6 @@ namespace GenericCore.Support
             }
         }
 
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer = null)
-        {
-            source.AssertNotNull("source");
-            keySelector.AssertNotNull("keySelector");
-
-            var seenKeys = new HashSet<TKey>(comparer);
-            foreach (var element in source)
-            {
-                if (seenKeys.Add(keySelector(element)))
-                    yield return element;
-            }
-        }
-
         public static IEnumerable<T> ToNullIfEmptyList<T>(this IEnumerable<T> list)
         {
             return list.IsNullOrEmptyList() ? null : list;
@@ -326,6 +314,33 @@ namespace GenericCore.Support
                 array[i] = array[j];
                 array[j] = temp;
             }
+        }
+
+        public static IEnumerable<TSource> Distinct<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer = null)
+        {
+            source.AssertNotNull("source");
+            keySelector.AssertNotNull("keySelector");
+
+            var seenKeys = new HashSet<TKey>(comparer);
+            foreach (var element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                    yield return element;
+            }
+        }
+
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, bool> eqFx, Func<TSource, int> hasher)
+        {
+            return
+                source
+                .Distinct(new LinqEqualityComparer<TSource>(eqFx, hasher));
+        }
+
+        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, bool> eqFx)
+        {
+            return
+                source
+                .Distinct(new LinqEqualityComparer<TSource>(eqFx));
         }
     }
 }
