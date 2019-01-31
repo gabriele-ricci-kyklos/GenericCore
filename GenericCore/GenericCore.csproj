@@ -60,6 +60,8 @@
     <Compile Include="Compression\LZ77\LZ77.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
     <Compile Include="Singleton.cs" />
+    <Compile Include="Support\EqualityComparers\LinqEqualityComparer.cs" />
+    <Compile Include="Support\EqualityComparers\PropertyEqualityComparer.cs" />
     <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
     <Compile Include="Support\Excel\OleDbExcelReader.cs" />
     <Compile Include="Support\ExtensionMethods\AssertsExtensionMethods.cs" />
