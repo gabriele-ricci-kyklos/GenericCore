@@ -1,5 +1,5 @@
 ﻿using GenericCore.Support.Collections;
-using GenericCore.Support.EqualityComparers;
+using GenericCore.Support.Collections.Comparers.Equality;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -333,14 +333,14 @@ namespace GenericCore.Support
         {
             return
                 source
-                .Distinct(new LinqEqualityComparer<TSource>(eqFx, hasher));
+                    .Distinct(new LinqEqualityComparer<TSource>(eqFx, hasher));
         }
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, bool> eqFx)
         {
             return
                 source
-                .Distinct(new LinqEqualityComparer<TSource>(eqFx));
+                    .Distinct(new LinqEqualityComparer<TSource>(eqFx));
         }
     }
 }

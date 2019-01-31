@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GenericCore.Support.EqualityComparers
+namespace GenericCore.Support.Collections.Comparers.Equality
 {
-    public class LinqEqualityComparer<T> : EqualityComparer<T>
+    public class LinqEqualityComparer<T> : IEqualityComparer<T>
     {
         private readonly Func<T, T, bool> _eqComparer;
         private readonly Func<T, int> _hashFunction;
@@ -22,12 +22,12 @@ namespace GenericCore.Support.EqualityComparers
             _hashFunction = hashFunction;
         }
 
-        public override bool Equals(T x, T y)
+        public bool Equals(T x, T y)
         {
             return _eqComparer(x, y);
         }
 
-        public override int GetHashCode(T obj)
+        public int GetHashCode(T obj)
         {
             return _hashFunction(obj);
         }
