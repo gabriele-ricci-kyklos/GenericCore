@@ -8,11 +8,11 @@ using System.Text;
 
 namespace GenericCore.Support.Excel
 {
-    public class OleDbExcelReader
+    public class OleDbExcelDataAccessor : IExcelDataAccessor
     {
         public string ConnectionString { get; }
 
-        public OleDbExcelReader(string connectionString)
+        public OleDbExcelDataAccessor(string connectionString)
         {
             connectionString.AssertNotNull("connectionString");
 
@@ -24,7 +24,7 @@ namespace GenericCore.Support.Excel
             return ReadDataImpl(ConnectionString, sheetNames, (name, conn) => new DataTable(name), null);
         }
 
-        public DataSet ReadMixedTypesData(string[] sheetNames)
+        public DataSet ReadDataWithMixedData(string[] sheetNames)
         {
             string connectionStringWhitoutHDR = ConnectionString.ReplaceInsensitive("HDR=YES", "HDR=NO");
 
@@ -130,6 +130,27 @@ namespace GenericCore.Support.Excel
             }
 
             return sheetNames.ToArray();
+        }
+
+        public static class ConnectionStrings
+        {
+            public static string ToExcelV8(string excelFileName)
+            {
+                excelFileName.AssertNotNull("excelFileName");
+                return $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source={excelFileName};Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\"";
+            }
+
+            public static string ToExcelV12(string excelFileName, bool useHeaders = true)
+            {
+                excelFileName.AssertNotNull("excelFileName");
+                return $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={excelFileName};Extended Properties=\"Excel 12.0;HDR={(useHeaders ? "Yes" : "No")};IMEX=1;TypeGuessRows=0;ImportMixedTypes=Text;READONLY=TRUE;\"";
+            }
+
+            public static string ToExcelV14(string excelFileName)
+            {
+                excelFileName.AssertNotNull("excelFileName");
+                return $"Provider=Microsoft.ACE.OLEDB.14.0;Data Source={excelFileName};Extended Properties=\"Excel 12.0;HDR=YES\"";
+            }
         }
     }
 }
