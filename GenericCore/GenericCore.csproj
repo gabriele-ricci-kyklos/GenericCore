@@ -60,6 +60,8 @@
     <Compile Include="Compression\LZ77\LZ77.cs" />
     <Compile Include="Compression\LZW\LZW.cs" />
     <Compile Include="Singleton.cs" />
+    <Compile Include="Support\Collections\Comparers\Dynamic\DynamicComparer.cs" />
+    <Compile Include="Support\Collections\Comparers\Dynamic\SortProperty.cs" />
     <Compile Include="Support\Collections\Comparers\Equality\LinqEqualityComparer.cs" />
     <Compile Include="Support\Collections\Comparers\Equality\PropertyEqualityComparer.cs" />
     <Compile Include="Support\Excel\ExcelOleDbConnectionString.cs" />
@@ -100,9 +102,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Support\Collections\Comparers\Dynamic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(TargetDir)*.dll" "$(ProjectDir)..\Distribution" /r /Y</PostBuildEvent>
