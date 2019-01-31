@@ -84,7 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\Xml\DynamicXmlDeserializer.cs" />
     <Compile Include="Serialization\Xml\QuickXmlSerializer.cs" />
-    <Compile Include="Support\Collections\OuterLinQJoinResult.cs" />
+    <Compile Include="Support\Collections\OuterLinqJoinResult.cs" />
     <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethods.cs" />

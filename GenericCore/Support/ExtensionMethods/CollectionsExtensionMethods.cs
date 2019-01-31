@@ -180,26 +180,26 @@ namespace GenericCore.Support
             return (list.IsNull() || !list.Any());
         }
 
-        public static IEnumerable<OuterLinQJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector)
+        public static IEnumerable<OuterLinqJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector)
         {
             return LeftJoin(outer, inner, outerKeySelector, innerKeySelector, EqualityComparer<TKey>.Default);
         }
 
-        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinQJoinResult<TOuter, TInner>, TResult> resultSelector)
+        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinqJoinResult<TOuter, TInner>, TResult> resultSelector)
         {
             return
                 LeftJoin(outer, inner, outerKeySelector, innerKeySelector)
                     .Select(x => resultSelector(x));
         }
 
-        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinQJoinResult<TOuter, TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<TResult> LeftJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<OuterLinqJoinResult<TOuter, TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
             return
                 LeftJoin(outer, inner, outerKeySelector, innerKeySelector, comparer)
                     .Select(x => resultSelector(x));
         }
 
-        public static IEnumerable<OuterLinQJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, IEqualityComparer<TKey> comparer)
+        public static IEnumerable<OuterLinqJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, IEqualityComparer<TKey> comparer)
         {
             inner.AssertNotNull("outer");
             outer.AssertNotNull("outer");
@@ -223,7 +223,7 @@ namespace GenericCore.Support
                     (
                         x => x.RightPart.DefaultIfEmpty(),
                         (x, y) => 
-                            new OuterLinQJoinResult<TOuter, TInner>
+                            new OuterLinqJoinResult<TOuter, TInner>
                             {
                                 LeftPart = x.LeftPart,
                                 RightPart = y
