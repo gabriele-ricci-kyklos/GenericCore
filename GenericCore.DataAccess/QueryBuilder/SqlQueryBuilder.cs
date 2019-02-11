@@ -16,6 +16,10 @@ namespace GenericCore.DataAccess.QueryBuilder
         private StringBuilder _query;
         private ISqlParametersManager _parametersManager;
 
+        private IEnumerable<SelectField> _selectFields;
+        private TableItem _currentJoinedTable;
+        private TablesCollection _tablesMap;
+
         public IDAOHelper DAOHelper { get; private set; }
         public IList<SqlParameter> Parameters { get; private set; }
 
@@ -33,6 +37,7 @@ namespace GenericCore.DataAccess.QueryBuilder
 
             _query = new StringBuilder();
             _parametersManager = new SqlParametersManager(daoHelper);
+            _tablesMap = new TablesCollection();
 
             Parameters = new List<SqlParameter>();
             DAOHelper = daoHelper;
@@ -41,7 +46,6 @@ namespace GenericCore.DataAccess.QueryBuilder
         public SqlQueryBuilder Select(string[] fields)
         {
             fields.AssertNotNull(nameof(fields));
-
             return Select(fields.Select(x => new SelectField(x)));
         }
 
@@ -49,17 +53,19 @@ namespace GenericCore.DataAccess.QueryBuilder
         {
             fields.AssertNotNull(nameof(fields));
 
-            fields = fields.Select(x => new SelectField(DAOHelper.EscapeField(x.Name), x.Alias));
-
-            _query.Append($"SELECT {fields.Select(x => x.ToString()).StringJoin(",")}");
+            fields = fields.Select(x => new SelectField(DAOHelper.EscapeField(x.Field), x.Alias));
+            _selectFields = fields;
             return this;
         }
 
-        public SqlQueryBuilder From(string tableName, string alias)
+        public SqlQueryBuilder From(string alias, string tableName)
         {
             tableName.AssertHasText(nameof(tableName));
             alias.AssertHasText(nameof(alias));
 
+            
+            _tablesMap.AddIfNecessary(new TableItem(TableRole.FromTable, alias, tableName));
+            _query.Append($"SELECT {_selectFields.Select(x => x.ToString()).StringJoin(",")}");
             _query.Append($" FROM {tableName} {alias}");
 
             return this;
@@ -102,6 +108,95 @@ namespace GenericCore.DataAccess.QueryBuilder
             string condition = WhereCondition(tableAlias, fieldName, whereOperator, value, skipIfNull);
             _query.Append($" OR ({condition})");
             return this;
+        }
+
+        public SqlQueryBuilder InnerJoin(string tableAlias, string tableName)
+        {
+            JoinType joinType = JoinType.InnerJoin;
+            string joinClause = JoinClause(joinType, tableAlias, tableName);
+            _query.Append($"{joinClause}");
+            return this;
+        }
+
+        public SqlQueryBuilder LeftJoin(string tableAlias, string tableName)
+        {
+            JoinType joinType = JoinType.LeftJoin;
+            string joinClause = JoinClause(joinType, tableAlias, tableName);
+            _query.Append($"{joinClause}");
+            return this;
+        }
+
+        public SqlQueryBuilder RightJoin(string tableAlias, string tableName)
+        {
+            JoinType joinType = JoinType.RightJoin;
+            string joinClause = JoinClause(joinType, tableAlias, tableName);
+            _query.Append($"{joinClause}");
+            return this;
+        }
+
+        public SqlQueryBuilder FullJoin(string tableAlias, string tableName)
+        {
+            JoinType joinType = JoinType.FullJoin;
+            string joinClause = JoinClause(joinType, tableAlias, tableName);
+            _query.Append($"{joinClause}");
+            return this;
+        }
+
+        public SqlQueryBuilder CrossJoin(string tableAlias, string tableName)
+        {
+            JoinType joinType = JoinType.CrossJoin;
+            string joinClause = JoinClause(joinType, tableAlias, tableName);
+            _query.Append($"{joinClause}");
+            return this;
+        }
+
+        public SqlQueryBuilder OnCondition(string leftTableAlias, string leftTableFieldName, OnOperator onOperator, string rightTableAlias, string rightTableFieldName)
+        {
+            if (_currentJoinedTable.IsNull())
+            {
+                throw new ArgumentException("No join call has been made");
+            }
+
+            string condition = OnConditionImpl(leftTableAlias, leftTableFieldName, onOperator, rightTableAlias, rightTableFieldName);
+            _query.Append($" ON {condition}");
+
+            return this;
+        }
+
+        public SqlQueryBuilder AndOnCondition(string leftTableAlias, string leftTableFieldName, OnOperator onOperator, string rightTableAlias, string rightTableFieldName)
+        {
+            string condition = OnConditionImpl(leftTableAlias, leftTableFieldName, onOperator, rightTableAlias, rightTableFieldName);
+            _query.Append($" AND ({condition})");
+            return this;
+        }
+
+        public SqlQueryBuilder OrOnCondition(string leftTableAlias, string leftTableFieldName, OnOperator onOperator, string rightTableAlias, string rightTableFieldName)
+        {
+            string condition = OnConditionImpl(leftTableAlias, leftTableFieldName, onOperator, rightTableAlias, rightTableFieldName);
+            _query.Append($" OR ({condition})");
+            return this;
+        }
+
+        private string OnConditionImpl(string leftTableAlias, string leftTableFieldName, OnOperator onOperator, string rightTableAlias, string rightTableFieldName)
+        {
+            leftTableAlias.AssertHasText(nameof(leftTableAlias));
+            leftTableFieldName.AssertHasText(nameof(leftTableFieldName));
+            rightTableAlias.AssertHasText(nameof(rightTableAlias));
+            rightTableFieldName.AssertHasText(nameof(rightTableFieldName));
+
+            switch (onOperator)
+            {
+                case OnOperator.EqualTo:
+                case OnOperator.NotEqualTo:
+                case OnOperator.GreaterThan:
+                case OnOperator.GreatherEqualThan:
+                case OnOperator.LessEqualThan:
+                case OnOperator.LessThan:
+
+                    return $"{leftTableAlias}.{leftTableFieldName} {OnOperatorToSql(onOperator)} {rightTableAlias}.{rightTableFieldName}";
+            }
+
+            return string.Empty;
         }
 
         private string WhereCondition(string tableAlias, string fieldName, WhereOperator whereOperator, object value, bool skipIfNull = true)
@@ -178,6 +273,45 @@ namespace GenericCore.DataAccess.QueryBuilder
             return string.Empty;
         }
 
+        private string JoinClause(JoinType type, string tableAlias, string tableName)
+        {
+            tableAlias.AssertHasText(nameof(tableAlias));
+            tableName.AssertHasText(nameof(tableName));
+
+            string joinClause = null;
+            TableRole role = TableRole.FromTable;
+
+            switch(type)
+            {
+                case JoinType.CrossJoin:
+                    joinClause = $" CROSS JOIN {tableName} {tableAlias}";
+                    role = TableRole.CrossJoinTable;
+                    break;
+                case JoinType.FullJoin:
+                    joinClause = $" FULL JOIN {tableName} {tableAlias}";
+                    role = TableRole.FullJoinTable;
+                    break;
+                case JoinType.InnerJoin:
+                    joinClause = $" INNER JOIN {tableName} {tableAlias}";
+                    role = TableRole.InnerJoinTable;
+                    break;
+                case JoinType.LeftJoin:
+                    joinClause = $" LEFT JOIN {tableName} {tableAlias}";
+                    role = TableRole.LeftJoinTable;
+                    break;
+                case JoinType.RightJoin:
+                    joinClause = $" RIGHT JOIN {tableName} {tableAlias}";
+                    role = TableRole.RightJoinTable;
+                    break;
+            }
+
+            TableItem tableItem = new TableItem(role, tableAlias, tableName);
+            _currentJoinedTable = tableItem;
+            _tablesMap.AddIfNecessary(tableItem);
+
+            return joinClause;
+        }
+
         private bool IsNullOrEmptyString(object value)
         {
             if (value.IsNull())
@@ -209,7 +343,7 @@ namespace GenericCore.DataAccess.QueryBuilder
 
         private string WhereOperatorToSql(WhereOperator oper)
         {
-            switch(oper)
+            switch (oper)
             {
                 case WhereOperator.EqualTo:
                     return "=";
@@ -229,6 +363,33 @@ namespace GenericCore.DataAccess.QueryBuilder
                     return "!=";
                 case WhereOperator.NotIn:
                     return " NOT IN";
+                default:
+                    throw new ArgumentException("Invalid WhereOperator");
+            }
+        }
+
+        private string OnOperatorToSql(OnOperator oper)
+        {
+            switch (oper)
+            {
+                case OnOperator.EqualTo:
+                    return "=";
+                case OnOperator.GreaterThan:
+                    return ">";
+                case OnOperator.GreatherEqualThan:
+                    return ">=";
+                //case OnOperator.In:
+                //    return "IN";
+                case OnOperator.LessEqualThan:
+                    return "<=";
+                case OnOperator.LessThan:
+                    return "<";
+                //case OnOperator.Like:
+                //    return "LIKE";
+                case OnOperator.NotEqualTo:
+                    return "!=";
+                //case OnOperator.NotIn:
+                //    return " NOT IN";
                 default:
                     throw new ArgumentException("Invalid WhereOperator");
             }

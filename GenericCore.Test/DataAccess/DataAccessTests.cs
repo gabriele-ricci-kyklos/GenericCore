@@ -110,6 +110,19 @@ namespace GenericCore.Test.DataAccess
             var dao = new MyDAO();
             object a = dao.MyQuery(4679991);
         }
+
+        [TestMethod]
+        public void JoinTestQuery()
+        {
+            SqlQueryBuilder builder = new SqlQueryBuilder(new SqlServerDAOHelper("System.Data.SqlClient"));
+            builder
+                .Select(new SelectField("I", "IDINSTANCE").AsArray())
+                .From("I", "BTINSTANCES")
+                .InnerJoin("S", "BTWAREHOUSESTOCKS")
+                .OnCondition("I", "IDINSTANCE", OnOperator.EqualTo, "S", "IDINSTANCE")
+                .Where()
+                .Condition("I", "BARCODE", WhereOperator.EqualTo, "5050925927567");
+        }
     }
 
     class MyDAO : BaseDAO

@@ -9,20 +9,33 @@ namespace GenericCore.DataAccess.QueryBuilder
 {
     public class SelectField
     {
-        public string Name { get; }
         public string Alias { get; }
+        public string Field { get; }
+        public string Name { get; }
+        
 
-        public SelectField(string name, string alias = null)
+        public SelectField(string alias, string field, string name)
         {
-            name.AssertNotNull(nameof(name));
-
-            Name = name;
+            field.AssertNotNull(nameof(field));
+            
             Alias = alias;
+            Field = field;
+            Name = name;
+        }
+
+        public SelectField(string alias, string field)
+            : this(alias, field, null)
+        {
+        }
+
+        public SelectField(string field)
+            : this(null, field, null)
+        {
         }
 
         public override string ToString()
         {
-            return $"{Name}{((!Alias.IsNullOrEmpty()) ? $" AS {Alias}" : string.Empty)}";
+            return $"{Field}.{Alias}{((!Name.IsNullOrEmpty()) ? $" AS {Name}" : string.Empty)}";
         }
     }
 }
