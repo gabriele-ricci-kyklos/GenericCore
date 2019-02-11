@@ -127,7 +127,7 @@ namespace GenericCore.DataAccess.QueryBuilder
                         Parameters.Add(paramNotEqualTo);
                         if (IsNullOrEmptyString(value))
                         {
-                            return $"{fieldName} IS NULL";
+                            return $"{fieldName} IS {(whereOperator == WhereOperator.EqualTo ? string.Empty : "NOT ")}NULL";
                         }
 
                         return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramNotEqualTo.Name}";
