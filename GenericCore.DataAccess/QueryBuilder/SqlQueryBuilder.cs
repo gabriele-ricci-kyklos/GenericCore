@@ -19,6 +19,14 @@ namespace GenericCore.DataAccess.QueryBuilder
         public IDAOHelper DAOHelper { get; private set; }
         public IList<SqlParameter> Parameters { get; private set; }
 
+        public string CurrentSQL
+        {
+            get
+            {
+                return _query.ToString();
+            }
+        }
+
         public SqlQueryBuilder(IDAOHelper daoHelper)
         {
             daoHelper.AssertNotNull(nameof(daoHelper));
@@ -66,6 +74,12 @@ namespace GenericCore.DataAccess.QueryBuilder
         public SqlQueryBuilder True()
         {
             _query.Append(" 1 = 1");
+            return this;
+        }
+
+        public SqlQueryBuilder False()
+        {
+            _query.Append(" 1 = 0");
             return this;
         }
 
@@ -154,6 +168,11 @@ namespace GenericCore.DataAccess.QueryBuilder
                     chunk.Append(")");
 
                     return chunk.ToString();
+
+                case WhereOperator.Like:
+                    SqlParameter paramLike = _parametersManager.BuildSqlParameter(originalFieldName, value);
+                    Parameters.Add(paramLike);
+                    return $"{fieldName} {WhereOperatorToSql(whereOperator)} %{paramLike.Name}%";
             }
 
             return string.Empty;
@@ -178,7 +197,7 @@ namespace GenericCore.DataAccess.QueryBuilder
 
         public SqlQueryBuilder CustomSql(string sql)
         {
-            sql.AssertHasText(sql);
+            sql.AssertHasText(nameof(sql));
             _query.Append(sql);
             return this;
         }
