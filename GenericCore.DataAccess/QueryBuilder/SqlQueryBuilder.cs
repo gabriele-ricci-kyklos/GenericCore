@@ -17,7 +17,7 @@ namespace GenericCore.DataAccess.QueryBuilder
         private ISqlParametersManager _parametersManager;
 
         private IEnumerable<SelectField> _selectFields;
-        private TableItem _currentJoinedTable;
+        private JoinInfo _joinInfo;
         private TablesCollection _tablesMap;
 
         public IDAOHelper DAOHelper { get; private set; }
@@ -63,10 +63,12 @@ namespace GenericCore.DataAccess.QueryBuilder
             tableName.AssertHasText(nameof(tableName));
             alias.AssertHasText(nameof(alias));
 
-            
-            _tablesMap.AddIfNecessary(new TableItem(TableRole.FromTable, alias, tableName));
+
+            TableItem fromTable = new TableItem(TableRole.FromTable, alias, tableName);
+            _tablesMap.AddIfNecessary(fromTable);
             _query.Append($"SELECT {_selectFields.Select(x => x.ToString()).StringJoin(",")}");
             _query.Append($" FROM {tableName} {alias}");
+            _joinInfo = new JoinInfo(fromTable);
 
             return this;
         }
@@ -150,11 +152,21 @@ namespace GenericCore.DataAccess.QueryBuilder
             return this;
         }
 
+        public SqlQueryBuilder OnCondition(string leftTableFieldName, OnOperator onOperator, string rightTableFieldName)
+        {
+            if (_joinInfo.IsNull() || _joinInfo.LeftTable.IsNull() || _joinInfo.RightTable.IsNull())
+            {
+                throw new ArgumentException($"No JoinInfo have been found. The call to {nameof(OnCondition)} has been probabily made without calling {nameof(From)} or a JOIN method");
+            }
+
+            return OnCondition(_joinInfo.LeftTable.TableAlias, _joinInfo.LeftTable.TableName, onOperator, _joinInfo.RightTable.TableAlias, _joinInfo.RightTable.TableName);
+        }
+
         public SqlQueryBuilder OnCondition(string leftTableAlias, string leftTableFieldName, OnOperator onOperator, string rightTableAlias, string rightTableFieldName)
         {
-            if (_currentJoinedTable.IsNull())
+            if (_joinInfo.IsNull() || _joinInfo.LeftTable.IsNull() || _joinInfo.RightTable.IsNull())
             {
-                throw new ArgumentException("No join call has been made");
+                throw new ArgumentException($"No JoinInfo have been found. The call to {nameof(OnCondition)} has been probabily made without calling {nameof(From)} or a JOIN method");
             }
 
             string condition = OnConditionImpl(leftTableAlias, leftTableFieldName, onOperator, rightTableAlias, rightTableFieldName);
@@ -306,7 +318,7 @@ namespace GenericCore.DataAccess.QueryBuilder
             }
 
             TableItem tableItem = new TableItem(role, tableAlias, tableName);
-            _currentJoinedTable = tableItem;
+            _joinInfo.RightTable = tableItem;
             _tablesMap.AddIfNecessary(tableItem);
 
             return joinClause;

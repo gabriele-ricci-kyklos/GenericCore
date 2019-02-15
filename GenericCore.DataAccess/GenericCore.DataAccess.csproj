@@ -46,6 +46,7 @@
     <Compile Include="DAOHelper\OracleDAOHelper.cs" />
     <Compile Include="DAOHelper\SqlServerDAOHelper.cs" />
     <Compile Include="DAOHelper\IDAOHelper.cs" />
+    <Compile Include="QueryBuilder\JoinInfo.cs" />
     <Compile Include="QueryBuilder\OnOperator.cs" />
     <Compile Include="QueryBuilder\TableItem.cs" />
     <Compile Include="QueryBuilder\JoinType.cs" />
