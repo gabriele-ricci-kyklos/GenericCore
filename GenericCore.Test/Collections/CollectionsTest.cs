@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GenericCore.Collections;
 using System.Linq;
 using GenericCore.Support;
+using GenericCore.Support.Collections.Comparers.Equality;
 
 namespace GenericCore.Test.Collections
 {
@@ -55,6 +56,15 @@ namespace GenericCore.Test.Collections
             Assert.IsTrue(distinct.ElementAt(1).ID == 2);
             Assert.IsTrue(distinct.First().Value == "1");
             Assert.IsTrue(distinct.ElementAt(1).Value == "3");
+        }
+
+        [TestMethod]
+        public void PropertyEqualityComparerTest()
+        {
+            var list1 = new List<GenericItem> { new GenericItem { ID = 1, Name = "John", Value = "1" }, new GenericItem { ID = 1, Name = "Marc", Value = "2" }, new GenericItem { ID = 2, Name = null, Value = "3" } };
+            var list2 = new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" } };
+
+            var result = list1.Except(list2, new PropertyEqualityComparer<GenericItem>(x => x.Name, false));
         }
 
         static List<GenericItem> GetTestList() => new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" }, new GenericItem { ID = 1, Name = null, Value = "2" }, new GenericItem { ID = 2, Name = "c", Value = "3" } };

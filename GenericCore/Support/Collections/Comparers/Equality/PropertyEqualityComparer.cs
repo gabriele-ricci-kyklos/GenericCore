@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.Support.Collections.Comparers.Equality
 {
@@ -11,10 +8,27 @@ namespace GenericCore.Support.Collections.Comparers.Equality
         private readonly Func<T, T, bool> _eqComparer;
         private readonly Func<T, int> _hashFunction;
 
-        public PropertyEqualityComparer(Func<T, object> propertyFx)
+        public PropertyEqualityComparer(Func<T, object> propertyFx, bool nullValuesEqual = true)
         {
-            _eqComparer = (x, y) => propertyFx(x).Equals(propertyFx(y));
-            _hashFunction = (x) => propertyFx(x).GetHashCode();
+            _eqComparer = (x, y) =>
+            {
+                var xProp = propertyFx(x);
+                var yProp = propertyFx(y);
+
+                if (xProp.IsNull() && yProp.IsNull())
+                {
+                    return nullValuesEqual;
+                }
+
+                if(xProp.IsNull())
+                {
+                    return false;
+                }
+
+                return xProp.Equals(yProp);
+            };
+
+            _hashFunction = (x) => propertyFx(x).Return(z => z.GetHashCode(), nullValuesEqual ? 0 : x.GetHashCode());
         }
 
         public bool Equals(T x, T y)
