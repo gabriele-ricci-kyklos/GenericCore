@@ -79,6 +79,27 @@ namespace GenericCore.Support
             }
         }
 
+        public static IEnumerable<TValue> GetValues<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList)
+        {
+            dict.AssertNotNull(nameof(dict));
+
+            return
+                keyList
+                    .ToEmptyIfNull()
+                    .Where(dict.ContainsKey)
+                    .Select(x => dict.GetValueOrDefault(x, default(TValue)));
+        }
+
+        public static IEnumerable<TValue> GetValuesOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList, TValue value)
+        {
+            dict.AssertNotNull(nameof(dict));
+
+            return
+                keyList
+                    .ToEmptyIfNull()
+                    .Select(x => dict.GetValueOrDefault(x, value));
+        }
+
         public static ReadOnlyDictionary<TKey, TSource> ToReadOnlyDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             Dictionary<TKey, TSource> dict = source.ToDictionary(keySelector);
