@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GenericCore.DataAccess.DAOHelper;
 
 namespace GenericCore.DataAccess.Factory
 {
     public class GenericDatabaseFactory : BaseGenericDatabaseFactory
     {
+        protected override IDAOHelper GetDAOHelperByProviderNameCore(string providerName)
+        {
+            return null;
+        }
     }
 }

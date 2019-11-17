@@ -3,11 +3,8 @@ using GenericCore.DataAccess.Factory;
 using GenericCore.DataAccess.QueryBuilder;
 using GenericCore.DataAccess.SqlParameters;
 using GenericCore.Support;
-using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GenericCore.DataAccess
@@ -35,16 +32,15 @@ namespace GenericCore.DataAccess
         {
             return new SqlQueryBuilder(Factory.DAOHelper);
         }
-        
+
         protected object ExecuteScalar(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
 
             using (var connection = Factory.GetGenericDbConnection())
+            using (var command = connection.CreateCommand())
             {
                 connection.Open();
-
-                var command = connection.CreateCommand();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
@@ -58,10 +54,9 @@ namespace GenericCore.DataAccess
             query.AssertHasText(nameof(query));
 
             using (var connection = Factory.GetGenericDbConnection())
+            using (var command = connection.CreateCommand())
             {
                 connection.Open();
-
-                var command = connection.CreateCommand();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
@@ -75,10 +70,9 @@ namespace GenericCore.DataAccess
             query.AssertHasText(nameof(query));
 
             using (var connection = Factory.GetGenericDbConnection())
+            using (var command = connection.CreateCommand())
             {
                 connection.Open();
-
-                var command = connection.CreateCommand();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
@@ -87,15 +81,20 @@ namespace GenericCore.DataAccess
             }
         }
 
+        protected int ExecuteNonQuery(SqlQueryBuilder builder)
+        {
+            builder.AssertNotNull(nameof(builder));
+            return ExecuteNonQuery(builder.CurrentSQL, builder.Parameters);
+        }
+
         protected async Task<int> ExecuteNonQueryAsync(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
 
             using (var connection = Factory.GetGenericDbConnection())
+            using (var command = connection.CreateCommand())
             {
                 connection.Open();
-
-                var command = connection.CreateCommand();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
@@ -104,11 +103,17 @@ namespace GenericCore.DataAccess
             }
         }
 
+        protected async Task<int> ExecuteNonQueryAsync(SqlQueryBuilder builder)
+        {
+            builder.AssertNotNull(nameof(builder));
+            return await ExecuteNonQueryAsync(builder.CurrentSQL, builder.Parameters);
+        }
+
         private void AddParameters(DbCommand command, IList<SqlParameter> parameters)
         {
             command.AssertNotNull(nameof(command));
 
-            if(parameters.IsNullOrEmptyList())
+            if (parameters.IsNullOrEmptyList())
             {
                 return;
             }

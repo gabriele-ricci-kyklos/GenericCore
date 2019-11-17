@@ -108,20 +108,14 @@ namespace GenericCore.Test.DataAccess
         {
             //changing the connection string to different providers will work
             var dao = new MyDAO();
-            object a = dao.MyQuery(4679991);
+            object a = dao.ExecuteScalarTest(4679991);
         }
 
         [TestMethod]
         public void JoinTestQuery()
         {
-            SqlQueryBuilder builder = new SqlQueryBuilder(new SqlServerDAOHelper("System.Data.SqlClient"));
-            builder
-                .Select(new SelectField("I", "IDINSTANCE").AsArray())
-                .From("I", "BTINSTANCES")
-                .InnerJoin("S", "BTWAREHOUSESTOCKS")
-                .OnCondition("I", "IDINSTANCE", OnOperator.EqualTo, "S", "IDINSTANCE")
-                .Where()
-                .Condition("I", "BARCODE", WhereOperator.EqualTo, "5050925927567");
+            var dao = new MyDAO();
+            int x = dao.JoinTestQuery();
         }
     }
 
@@ -131,10 +125,24 @@ namespace GenericCore.Test.DataAccess
         {
         }
 
-        public object MyQuery(long idInstance)
+        public object ExecuteScalarTest(long idInstance)
         {
             SqlParameter idInstanceParam = SqlParametersManager.BuildSqlParameter("IDINSTANCE", idInstance);
             return ExecuteScalar($"SELECT IDINSTANCE FROM BTINSTANCES WHERE IDINSTANCE = {idInstanceParam.Name}", idInstanceParam.AsArray());
+        }
+
+        public int JoinTestQuery()
+        {
+            var builder = 
+                NewSqlQueryBuilder()
+                .Select(new SelectField("I", "IDINSTANCE").AsArray())
+                .From("I", "BTINSTANCES")
+                .InnerJoin("S", "BTWAREHOUSESTOCKS")
+                .OnCondition("I", "IDINSTANCE", OnOperator.EqualTo, "S", "IDINSTANCE")
+                .Where()
+                .Condition("I", "BARCODE", WhereOperator.EqualTo, "5050925927567");
+
+            return ExecuteNonQuery(builder);
         }
     }
 }

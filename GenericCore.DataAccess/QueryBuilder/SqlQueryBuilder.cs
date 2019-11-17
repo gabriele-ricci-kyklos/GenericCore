@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.DataAccess.QueryBuilder
 {
@@ -215,7 +214,7 @@ namespace GenericCore.DataAccess.QueryBuilder
         {
             tableAlias.AssertHasText(nameof(tableAlias));
 
-            if(skipIfNull && IsNullOrEmptyString(value) && (whereOperator != WhereOperator.EqualTo && whereOperator != WhereOperator.EqualTo))
+            if (skipIfNull && IsNullOrEmptyString(value) && (whereOperator != WhereOperator.EqualTo && whereOperator != WhereOperator.EqualTo))
             {
                 return string.Empty;
             }
@@ -250,7 +249,7 @@ namespace GenericCore.DataAccess.QueryBuilder
                     SqlParameter paramLessThan = _parametersManager.BuildSqlParameter(originalFieldName, value);
                     Parameters.Add(paramLessThan);
                     return $"{fieldName} {WhereOperatorToSql(whereOperator)} {paramLessThan.Name}";
-                    
+
                 case WhereOperator.In:
                 case WhereOperator.NotIn:
 
@@ -293,7 +292,7 @@ namespace GenericCore.DataAccess.QueryBuilder
             string joinClause = null;
             TableRole role = TableRole.FromTable;
 
-            switch(type)
+            switch (type)
             {
                 case JoinType.CrossJoin:
                     joinClause = $" CROSS JOIN {tableName} {tableAlias}";

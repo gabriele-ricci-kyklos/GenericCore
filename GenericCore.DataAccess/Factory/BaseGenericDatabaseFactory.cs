@@ -1,12 +1,8 @@
 ﻿using GenericCore.DataAccess.DAOHelper;
 using GenericCore.Support;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.DataAccess.Factory
 {
@@ -15,7 +11,7 @@ namespace GenericCore.DataAccess.Factory
         private const string _connectionStringName = "GenericCoreDataSource";
         public ConnectionStringSettings ConnectionString { get; private set; }
         public IDAOHelper DAOHelper { get; private set; }
-        
+
         public BaseGenericDatabaseFactory()
         {
             AcquireConnectionString();
@@ -34,7 +30,7 @@ namespace GenericCore.DataAccess.Factory
         {
             ConnectionStringSettings connectionStringObj = ConfigurationManager.ConnectionStrings[_connectionStringName];
 
-            if(connectionStringObj.IsNull())
+            if (connectionStringObj.IsNull())
             {
                 throw new ArgumentException($"No connection string is configured: expected connection string with name '{_connectionStringName}'");
             }
@@ -48,7 +44,7 @@ namespace GenericCore.DataAccess.Factory
 
             IDAOHelper daoHelper = null;
 
-            switch(providerName)
+            switch (providerName)
             {
                 case "Oracle.ManagedDataAccess.Client":
                     daoHelper = new OracleDAOHelper(providerName);
@@ -61,7 +57,7 @@ namespace GenericCore.DataAccess.Factory
                     break;
             }
 
-            if(daoHelper.IsNull())
+            if (daoHelper.IsNull())
             {
                 throw new ArgumentException($"No configured DAO Helper found for provider name '{providerName}'");
             }
@@ -69,9 +65,6 @@ namespace GenericCore.DataAccess.Factory
             return daoHelper;
         }
 
-        protected virtual IDAOHelper GetDAOHelperByProviderNameCore(string providerName)
-        {
-            return null;
-        }
+        protected abstract IDAOHelper GetDAOHelperByProviderNameCore(string providerName);
     }
 }
