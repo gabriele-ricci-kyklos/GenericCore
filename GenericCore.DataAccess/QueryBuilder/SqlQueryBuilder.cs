@@ -19,16 +19,10 @@ namespace GenericCore.DataAccess.QueryBuilder
         private JoinInfo _joinInfo;
         private TablesCollection _tablesMap;
 
-        public IDAOHelper DAOHelper { get; private set; }
-        public IList<SqlParameter> Parameters { get; private set; }
+        public IDAOHelper DAOHelper { get; }
+        public IList<SqlParameter> Parameters { get; }
 
-        public string CurrentSQL
-        {
-            get
-            {
-                return _query.ToString();
-            }
-        }
+        public string CurrentSQL => _query.ToString();
 
         public SqlQueryBuilder(IDAOHelper daoHelper)
         {

@@ -10,7 +10,7 @@ namespace GenericCore.DataAccess.Factory
     {
         private const string _connectionStringName = "GenericCoreDataSource";
         public ConnectionStringSettings ConnectionString { get; private set; }
-        public IDAOHelper DAOHelper { get; private set; }
+        public IDAOHelper DAOHelper { get; }
 
         public BaseGenericDatabaseFactory()
         {
@@ -46,10 +46,10 @@ namespace GenericCore.DataAccess.Factory
 
             switch (providerName)
             {
-                case "Oracle.ManagedDataAccess.Client":
+                case SupportedDatabaseProviders.Oracle:
                     daoHelper = new OracleDAOHelper(providerName);
                     break;
-                case "System.Data.SqlClient":
+                case SupportedDatabaseProviders.SQLServer:
                     daoHelper = new SqlServerDAOHelper(providerName);
                     break;
                 default:

@@ -13,14 +13,7 @@ namespace GenericCore.DataAccess
     {
         protected IGenericDatabaseFactory Factory;
         protected ISqlParametersManager SqlParametersManager;
-
-        protected IDAOHelper DAOHelper
-        {
-            get
-            {
-                return Factory.DAOHelper;
-            }
-        }
+        protected IDAOHelper DAOHelper => Factory.DAOHelper;
 
         public BaseDAO(IGenericDatabaseFactory factory = null)
         {
@@ -56,13 +49,25 @@ namespace GenericCore.DataAccess
             using (var connection = Factory.GetGenericDbConnection())
             using (var command = connection.CreateCommand())
             {
-                connection.Open();
+                await connection.OpenAsync();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
 
                 return await command.ExecuteScalarAsync();
             }
+        }
+
+        protected object ExecuteScalar(SqlQueryBuilder builder)
+        {
+            builder.AssertNotNull(nameof(builder));
+            return ExecuteScalar(builder.CurrentSQL, builder.Parameters);
+        }
+
+        protected async Task<object> ExecuteScalarAsync(SqlQueryBuilder builder)
+        {
+            builder.AssertNotNull(nameof(builder));
+            return await ExecuteScalarAsync(builder.CurrentSQL, builder.Parameters);
         }
 
         protected int ExecuteNonQuery(string query, IList<SqlParameter> parameters = null)
@@ -81,12 +86,6 @@ namespace GenericCore.DataAccess
             }
         }
 
-        protected int ExecuteNonQuery(SqlQueryBuilder builder)
-        {
-            builder.AssertNotNull(nameof(builder));
-            return ExecuteNonQuery(builder.CurrentSQL, builder.Parameters);
-        }
-
         protected async Task<int> ExecuteNonQueryAsync(string query, IList<SqlParameter> parameters = null)
         {
             query.AssertHasText(nameof(query));
@@ -94,13 +93,19 @@ namespace GenericCore.DataAccess
             using (var connection = Factory.GetGenericDbConnection())
             using (var command = connection.CreateCommand())
             {
-                connection.Open();
+                await connection.OpenAsync();
                 command.CommandText = query;
 
                 AddParameters(command, parameters);
 
                 return await command.ExecuteNonQueryAsync();
             }
+        }
+
+        protected int ExecuteNonQuery(SqlQueryBuilder builder)
+        {
+            builder.AssertNotNull(nameof(builder));
+            return ExecuteNonQuery(builder.CurrentSQL, builder.Parameters);
         }
 
         protected async Task<int> ExecuteNonQueryAsync(SqlQueryBuilder builder)

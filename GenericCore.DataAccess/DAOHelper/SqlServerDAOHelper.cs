@@ -9,14 +9,7 @@ namespace GenericCore.DataAccess.DAOHelper
     {
         private readonly static IDictionary<Type, DbType> _typeToDbMapping;
 
-        public string ParameterStartPrefix
-        {
-            get
-            {
-                return "@";
-            }
-        }
-
+        public string ParameterStartPrefix => "@";
         public string ProviderInvariantName { get; }
 
         public string EscapeField(string fieldName)
@@ -27,8 +20,7 @@ namespace GenericCore.DataAccess.DAOHelper
 
         public DbType MapTypeToDbType(Type type)
         {
-            DbType value;
-            if (!_typeToDbMapping.TryGetValue(type, out value))
+            if (!_typeToDbMapping.TryGetValue(type, out DbType value))
             {
                 throw new ArgumentException($"The type {type.Name} is not mapped to any DbType");
             }
@@ -78,7 +70,7 @@ namespace GenericCore.DataAccess.DAOHelper
 
         public SqlServerDAOHelper(string providerName)
         {
-            providerName.AssertHasText("providerName");
+            providerName.AssertHasText(nameof(providerName));
             ProviderInvariantName = providerName;
         }
     }
