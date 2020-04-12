@@ -152,7 +152,7 @@ namespace GenericCore.Support
         //credits: https://docs.microsoft.com/it-it/dotnet/csharp/programming-guide/nullable-types/how-to-identify-a-nullable-type
         public static bool IsNullable<T>(this T obj)
         {
-            if(obj.IsNull())
+            if (obj.IsNull())
             {
                 return true;
             }
@@ -167,7 +167,7 @@ namespace GenericCore.Support
             {
                 return new T?();
             }
-            
+
             if (Enum.TryParse<T>(s, out T result))
             {
                 return result;
@@ -180,6 +180,24 @@ namespace GenericCore.Support
         {
             T? value = s.ToEnum<T>();
             return value ?? failureValue;
-        }   
+        }
+
+        public static string GetFileName(this Uri uri)
+        {
+            uri.AssertNotNull(nameof(uri));
+            return Path.GetFileName(uri.LocalPath);
+        }
+
+        public static Uri ToUri(this string uriString)
+        {
+            uriString.AssertHasText(nameof(uriString));
+
+            if (Uri.TryCreate(uriString, UriKind.Absolute, out Uri uri))
+            {
+                return uri;
+            }
+
+            throw new UriFormatException($"The string '{uriString}' is not a valid URI");
+        }
     }
 }

@@ -88,7 +88,6 @@
     <Compile Include="Support\IO\IOUtilities.cs" />
     <Compile Include="Support\Json\Converters\DecimalFormatConverter.cs" />
     <Compile Include="Support\NameValue.cs" />
-    <Compile Include="Support\PatternMatcher.cs" />
     <Compile Include="Compression\Zip\Zipper.cs" />
     <Compile Include="Cryptography\GenericEncryption.cs" />
     <Compile Include="Cryptography\Hashing.cs" />
@@ -100,11 +99,8 @@
     <Compile Include="Support\ExtensionMethods\CollectionsExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethods.cs" />
-    <Compile Include="Support\Counter.cs" />
     <Compile Include="Support\Pdf\PdfHelper.cs" />
-    <Compile Include="Support\SharedCounter.cs" />
     <Compile Include="Support\Strings\BinaryString.cs" />
-    <Compile Include="Support\Utilities.cs" />
     <Compile Include="Support\Web\WebDataRetriever.cs" />
     <Compile Include="UI\ComboItem.cs" />
     <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
