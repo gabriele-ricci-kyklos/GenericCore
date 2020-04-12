@@ -78,11 +78,13 @@
     <Compile Include="Support\ExtensionMethods\BitArrayExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\DataExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\DictionaryExtensionMethods.cs" />
+    <Compile Include="Support\ExtensionMethods\IOExtensionMethods.cs" />
     <Compile Include="Support\ExtensionMethods\ReflectionExtensionMethods.cs" />
     <Compile Include="Support\Factory\FactoryObject.cs" />
     <Compile Include="Support\Factory\FactoryObjectsCollection.cs" />
     <Compile Include="Support\Factory\ObjectsFactory.cs" />
     <Compile Include="Support\Factory\ObjectsFactoryException.cs" />
+    <Compile Include="Support\IO\FileHelper.cs" />
     <Compile Include="Support\IO\IOUtilities.cs" />
     <Compile Include="Support\Json\Converters\DecimalFormatConverter.cs" />
     <Compile Include="Support\NameValue.cs" />
