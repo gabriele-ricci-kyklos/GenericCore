@@ -1,13 +1,10 @@
 ﻿using GenericCore.Support.Json.Converters;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -57,7 +54,7 @@ namespace GenericCore.Support
         }
 
         public static TResult Return<TInput, TResult>(this TInput? o, Func<TInput, TResult> evaluator, TResult failureValue)
-                    where TInput : struct
+            where TInput : struct
         {
             return !o.HasValue ? failureValue : evaluator(o.Value);
         }

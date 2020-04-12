@@ -22,9 +22,9 @@ namespace GenericCore.Support
                     .AsReadOnly();
         }
 
-        public static bool IsNullOrEmptyList<T>(this IList<T> list)
+        public static bool IsNullOrEmptyList<T>(this IEnumerable<T> list)
         {
-            return list.IsNull() || list.Count == 0;
+            return list.IsNull() || !list.Any();
         }
 
         public static IEnumerable<T> ToEmptyIfNull<T>(this IEnumerable<T> enumerable)
@@ -63,7 +63,7 @@ namespace GenericCore.Support
             }
 
             int index = 0;
-            foreach (var item in sequence.ToList())
+            foreach (var item in sequence)
             {
                 action(item, index);
                 ++index;
@@ -77,6 +77,7 @@ namespace GenericCore.Support
 
             return
                 source
+                    .ToEmptyIfNull()
                     .Select(x => new Tuple<TResult>(selector(x)))
                     .ToList();
         }
@@ -89,6 +90,7 @@ namespace GenericCore.Support
 
             return
                 source
+                    .ToEmptyIfNull()
                     .Select(x => new Tuple<T1, T2>(selector1(x), selector2(x)))
                     .ToList();
         }
@@ -102,6 +104,7 @@ namespace GenericCore.Support
 
             return
                 source
+                    .ToEmptyIfNull()
                     .Select(x => new Tuple<T1, T2, T3>(selector1(x), selector2(x), selector3(x)))
                     .ToList();
         }
@@ -152,7 +155,7 @@ namespace GenericCore.Support
 
         public static IList<T> AsList<T>(this T s, int size = 1)
         {
-            return s.AsArray(size).ToList();
+            return new List<T> { s };
         }
 
         public static T[] AsArray<T>(this T item, int size = 1)
@@ -173,11 +176,6 @@ namespace GenericCore.Support
         public static IList<T> AsListOrNull<T>(this T item, int size = 1)
         {
             return item.IsNull() ? null : item.AsList(size);
-        }
-        
-        public static bool IsNullOrEmptyList<T>(this IEnumerable<T> list)
-        {
-            return (list.IsNull() || !list.Any());
         }
 
         public static IEnumerable<OuterLinqJoinResult<TOuter, TInner>> LeftJoin<TOuter, TInner, TKey>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector)
@@ -211,7 +209,7 @@ namespace GenericCore.Support
                         inner,
                         outerKeySelector,
                         innerKeySelector,
-                        (x, y) => 
+                        (x, y) =>
                             new
                             {
                                 LeftPart = x,
@@ -222,7 +220,7 @@ namespace GenericCore.Support
                     .SelectMany
                     (
                         x => x.RightPart.DefaultIfEmpty(),
-                        (x, y) => 
+                        (x, y) =>
                             new OuterLinqJoinResult<TOuter, TInner>
                             {
                                 LeftPart = x.LeftPart,

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.Support
 {
@@ -27,11 +25,6 @@ namespace GenericCore.Support
             return returnDict;
         }
 
-        public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-        {
-            return new ReadOnlyDictionary<TKey, TValue>(dictionary);
-        }
-
         public static Dictionary<TKey, TResult> ToDictionary<TKey, TResult>(this IEnumerable<KeyValuePair<TKey, TResult>> itemList)
         {
             itemList.AssertNotNull("itemList");
@@ -44,7 +37,7 @@ namespace GenericCore.Support
             return itemList.ToDictionary(x => x.Key, x => x.Value);
         }
 
-        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
+        public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue failureValue = default(TValue))
         {
             dict.AssertNotNull(nameof(dict));
 
@@ -54,11 +47,11 @@ namespace GenericCore.Support
             }
             else
             {
-                return value;
+                return failureValue;
             }
         }
 
-        public static TValue GetValueOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> items, TKey key, TValue value)
+        public static TValue GetValueOrDefault<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> items, TKey key, TValue failureValue)
         {
             items.AssertNotNull(nameof(items));
 
@@ -69,58 +62,35 @@ namespace GenericCore.Support
                 throw new InvalidCastException("Unable to cast the collection 'items' to IDictionary<TKey, TValue>");
             }
 
-            if (dict.TryGetValue(key, out TValue existingValue))
-            {
-                return existingValue;
-            }
-            else
-            {
-                return value;
-            }
+            return dict.GetValueOrDefault(key, failureValue);
         }
 
-        public static IEnumerable<TValue> GetValues<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList)
+        public static ReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
-            dict.AssertNotNull(nameof(dict));
-
-            return
-                keyList
-                    .ToEmptyIfNull()
-                    .Where(dict.ContainsKey)
-                    .Select(x => dict.GetValueOrDefault(x, default(TValue)));
-        }
-
-        public static IEnumerable<TValue> GetValuesOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList, TValue value)
-        {
-            dict.AssertNotNull(nameof(dict));
-
-            return
-                keyList
-                    .ToEmptyIfNull()
-                    .Select(x => dict.GetValueOrDefault(x, value));
+            return new ReadOnlyDictionary<TKey, TValue>(dictionary);
         }
 
         public static ReadOnlyDictionary<TKey, TSource> ToReadOnlyDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            Dictionary<TKey, TSource> dict = source.ToDictionary(keySelector);
+            IDictionary<TKey, TSource> dict = source.ToDictionary(keySelector);
             return dict.AsReadOnly();
         }
 
         public static ReadOnlyDictionary<TKey, TSource> ToReadOnlyDictionary<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
-            Dictionary<TKey, TSource> dict = source.ToDictionary(keySelector, comparer);
+            IDictionary<TKey, TSource> dict = source.ToDictionary(keySelector, comparer);
             return dict.AsReadOnly();
         }
 
         public static ReadOnlyDictionary<TKey, TElement> ToReadOnlyDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
         {
-            Dictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector);
+            IDictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector);
             return dict.AsReadOnly();
         }
 
         public static ReadOnlyDictionary<TKey, TElement> ToReadOnlyDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            Dictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector, comparer);
+            IDictionary<TKey, TElement> dict = source.ToDictionary(keySelector, elementSelector, comparer);
             return dict.AsReadOnly();
         }
 
@@ -142,6 +112,26 @@ namespace GenericCore.Support
             }
 
             return itemList.ToReadOnlyDictionary(x => x.Key, x => x.Value, comparer);
+        }
+
+        public static IDictionary<TKey, TValue> ToEmptyDictIfNull<TKey, TValue>(this IDictionary<TKey, TValue> dict)
+        {
+            if (dict.IsNull())
+            {
+                return new Dictionary<TKey, TValue>();
+            }
+
+            return dict;
+        }
+
+        public static IDictionary<TKey, TValue> ToNullIfEmptyDict<TKey, TValue>(this IDictionary<TKey, TValue> dict)
+        {
+            if (dict.IsNullOrEmptyList())
+            {
+                return null;
+            }
+
+            return dict;
         }
     }
 }
