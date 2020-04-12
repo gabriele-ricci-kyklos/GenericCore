@@ -102,8 +102,6 @@
     <Compile Include="Support\Pdf\PdfHelper.cs" />
     <Compile Include="Support\Strings\BinaryString.cs" />
     <Compile Include="Support\Web\WebDataRetriever.cs" />
-    <Compile Include="UI\ComboItem.cs" />
-    <Compile Include="Support\ExtensionMethods\UIExtensionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
