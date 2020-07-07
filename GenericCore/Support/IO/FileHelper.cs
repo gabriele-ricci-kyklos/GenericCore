@@ -18,6 +18,14 @@ namespace GenericCore.Support.IO
             {
                 return new DriveInfo(path).DriveType == DriveType.Network;
             }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
             catch (Exception)
             {
                 return false;
@@ -29,6 +37,14 @@ namespace GenericCore.Support.IO
             try
             {
                 return new Uri(path).IsUnc;
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (ArgumentException)
+            {
+                throw;
             }
             catch (Exception)
             {
@@ -216,7 +232,7 @@ namespace GenericCore.Support.IO
 
             if (IsUncPath(sourceFilePath) || HasNetworkDrive(sourceFilePath) || IsUncPath(destFilePath) || HasNetworkDrive(destFilePath))
             {
-                await InternalCopyToAsync(sourceFilePath, destFilePath, FileOptions.DeleteOnClose).ConfigureAwait(false);
+                await InternalCopyToAsync(sourceFilePath, destFilePath, FileOptions.Asynchronous | FileOptions.DeleteOnClose).ConfigureAwait(false);
                 return;
             }
 
@@ -235,14 +251,35 @@ namespace GenericCore.Support.IO
             await Task.Run(() => File.Move(sourceFilePath, destFilePath)).ConfigureAwait(false);
         }
 
-        public static async Task CopyAsync(string sourceFileName, string destFileName)
+        public static async Task CopyAsync(string sourceFilePath, string destFilePath)
         {
-            await InternalCopyToAsync(sourceFileName, destFileName).ConfigureAwait(false);
+            await CopyAsync(sourceFilePath, destFilePath, false).ConfigureAwait(false);
         }
 
-        public static async Task CopyAsync(string sourceFileName, string destFileName, bool overwrite)
+        public static async Task CopyAsync(string sourceFilePath, string destFilePath, bool overwrite)
         {
-            await InternalCopyToAsync(sourceFileName, destFileName, overwrite: overwrite).ConfigureAwait(false);
+            sourceFilePath.AssertHasText(nameof(sourceFilePath));
+            destFilePath.AssertHasText(nameof(destFilePath));
+
+            if (IsUncPath(sourceFilePath) || HasNetworkDrive(sourceFilePath) || IsUncPath(destFilePath) || HasNetworkDrive(destFilePath))
+            {
+                await InternalCopyToAsync(sourceFilePath, destFilePath, FileOptions.Asynchronous | FileOptions.SequentialScan, overwrite).ConfigureAwait(false);
+                return;
+            }
+
+            FileInfo sourceFileInfo = new FileInfo(sourceFilePath);
+            string sourceDrive = Path.GetPathRoot(sourceFileInfo.FullName);
+
+            FileInfo destFileInfo = new FileInfo(destFilePath);
+            string destDrive = Path.GetPathRoot(destFileInfo.FullName);
+
+            if (sourceDrive == destDrive)
+            {
+                File.Copy(sourceFilePath, destFilePath, overwrite);
+                return;
+            }
+
+            await Task.Run(() => File.Copy(sourceFilePath, destFilePath, overwrite)).ConfigureAwait(false);
         }
 
         public static async Task<byte[]> ReadAllBytesAsync(string path)
