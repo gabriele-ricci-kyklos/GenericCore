@@ -133,5 +133,33 @@ namespace GenericCore.Support
 
             return dict;
         }
+
+        public static IDictionary<TKey, TValue> GetValuesOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList)
+        {
+            return dict.GetValuesOrDefault(keyList, new Dictionary<TKey, TValue>());
+        }
+
+        public static IDictionary<TKey, TValue> GetValuesOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<TKey> keyList, IDictionary<TKey, TValue> defaultValue)
+        {
+            if (keyList.IsNullOrEmptyList())
+            {
+                return defaultValue;
+            }
+
+            dict.AssertNotNull(nameof(dict));
+
+            var resultList =
+                keyList
+                    .Where(dict.ContainsKey)
+                    .Select(k => new { Key = k, Value = dict[k] })
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+            if (!resultList.Any())
+            {
+                return defaultValue;
+            }
+
+            return resultList;
+        }
     }
 }

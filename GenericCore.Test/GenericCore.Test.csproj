@@ -97,6 +97,7 @@
     <Compile Include="Support\ExtensionMethods\StringsExtensionMethodsTests.cs" />
     <Compile Include="Serialization\SerializationTests.cs" />
     <Compile Include="Support\ExtensionMethods\CommonExtensionMethodsTests.cs" />
+    <Compile Include="Support\ExtensionMethods\DictionaryExtensionMethodsTests.cs" />
     <Compile Include="Support\IO\FileHelperTests.cs" />
     <Compile Include="Support\SupportTests.cs" />
     <Compile Include="Support\Strings\StringsTests.cs" />
