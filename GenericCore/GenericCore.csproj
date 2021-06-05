@@ -71,6 +71,8 @@
     <Compile Include="Support\Collections\Comparers\Dynamic\SortProperty.cs" />
     <Compile Include="Support\Collections\Comparers\Equality\LinqEqualityComparer.cs" />
     <Compile Include="Support\Collections\Comparers\Equality\PropertyEqualityComparer.cs" />
+    <Compile Include="Support\Collections\Enumerators\EnumeratorWrapper.cs" />
+    <Compile Include="Support\Collections\Enumerators\EnumeratorWrapperDictionary.cs" />
     <Compile Include="Support\Excel\ExcelDataReaderAccessor.cs" />
     <Compile Include="Support\Excel\IExcelDataAccessor.cs" />
     <Compile Include="Support\Excel\OleDbExcelDataAccessor.cs" />
