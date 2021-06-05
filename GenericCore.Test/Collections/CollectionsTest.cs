@@ -61,13 +61,26 @@ namespace GenericCore.Test.Collections
         [TestMethod]
         public void PropertyEqualityComparerTest()
         {
-            var list1 = new List<GenericItem> { new GenericItem { ID = 1, Name = "John", Value = "1" }, new GenericItem { ID = 1, Name = "Marc", Value = "2" }, new GenericItem { ID = 2, Name = null, Value = "3" } };
+            var list1 =
+                new List<GenericItem> 
+                { 
+                    new GenericItem { ID = 1, Name = "John", Value = "1" },
+                    new GenericItem { ID = 1, Name = "Marc", Value = "2" },
+                    new GenericItem { ID = 2, Name = null, Value = "3" }
+                };
+
             var list2 = new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" } };
 
-            var result = list1.Except(list2, new PropertyEqualityComparer<GenericItem>(x => x.Name, false));
+            var result = list1.Except(list2, PropertyEqualityComparer<GenericItem>.ByProperty(x => x.Name, false));
         }
 
-        static List<GenericItem> GetTestList() => new List<GenericItem> { new GenericItem { ID = 1, Name = null, Value = "1" }, new GenericItem { ID = 1, Name = null, Value = "2" }, new GenericItem { ID = 2, Name = "c", Value = "3" } };
+        static List<GenericItem> GetTestList()
+            => new List<GenericItem> 
+            {
+                new GenericItem { ID = 1, Name = null, Value = "1" },
+                new GenericItem { ID = 1, Name = null, Value = "2" },
+                new GenericItem { ID = 2, Name = "c", Value = "3" }
+            };
     }
 
     class IgnoreNullValuesKey : GenericGroupKey

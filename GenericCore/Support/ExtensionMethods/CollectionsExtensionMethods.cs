@@ -331,14 +331,7 @@ namespace GenericCore.Support
         {
             return
                 source
-                    .Distinct(new LinqEqualityComparer<TSource>(eqFx, hasher));
-        }
-
-        public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, bool> eqFx)
-        {
-            return
-                source
-                    .Distinct(new LinqEqualityComparer<TSource>(eqFx));
+                    .Distinct(LinqEqualityComparer<TSource>.Create(hasher, eqFx));
         }
     }
 }

@@ -8,7 +8,12 @@ namespace GenericCore.Support.Collections.Comparers.Equality
         private readonly Func<T, T, bool> _eqComparer;
         private readonly Func<T, int> _hashFunction;
 
-        public PropertyEqualityComparer(Func<T, object> propertyFx, bool nullValuesEqual = true)
+        public static IEqualityComparer<T> ByProperty(Func<T, object> propertyFx, bool nullValuesEqual = true)
+        {
+            return new PropertyEqualityComparer<T>(propertyFx, nullValuesEqual);
+        }
+
+        private PropertyEqualityComparer(Func<T, object> propertyFx, bool nullValuesEqual = true)
         {
             _eqComparer = (x, y) =>
             {
@@ -20,7 +25,7 @@ namespace GenericCore.Support.Collections.Comparers.Equality
                     return nullValuesEqual;
                 }
 
-                if(xProp.IsNull())
+                if (xProp.IsNull())
                 {
                     return false;
                 }
@@ -31,14 +36,8 @@ namespace GenericCore.Support.Collections.Comparers.Equality
             _hashFunction = (x) => propertyFx(x).Return(z => z.GetHashCode(), nullValuesEqual ? 0 : x.GetHashCode());
         }
 
-        public bool Equals(T x, T y)
-        {
-            return _eqComparer(x, y);
-        }
+        public bool Equals(T x, T y) => _eqComparer(x, y);
 
-        public int GetHashCode(T obj)
-        {
-            return _hashFunction(obj);
-        }
+        public int GetHashCode(T obj) => _hashFunction(obj);
     }
 }

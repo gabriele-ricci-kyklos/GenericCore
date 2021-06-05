@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GenericCore.Support.Collections.Comparers.Equality
 {
     public class LinqEqualityComparer<T> : IEqualityComparer<T>
     {
-        private readonly Func<T, T, bool> _eqComparer;
-        private readonly Func<T, int> _hashFunction;
+        private readonly Func<T, int> _getHashCodeFx;
+        private readonly Func<T, T, bool> _equalsFx;
 
-        public LinqEqualityComparer(Func<T, T, bool> eqComparer)
-            : this(eqComparer, x => x.GetHashCode())
+        public static LinqEqualityComparer<T> Create(Func<T, int> getHashCodeFx, Func<T, T, bool> equalsFx)
         {
+            return new LinqEqualityComparer<T>(getHashCodeFx, equalsFx);
         }
 
-        public LinqEqualityComparer(Func<T, T, bool> eqComparer, Func<T, int> hashFunction)
+        private LinqEqualityComparer(Func<T, int> getHashCodeFx, Func<T, T, bool> equalsFx)
         {
-            _eqComparer = eqComparer;
-            _hashFunction = hashFunction;
+            _getHashCodeFx = getHashCodeFx;
+            _equalsFx = equalsFx;
         }
 
-        public bool Equals(T x, T y)
-        {
-            return _eqComparer(x, y);
-        }
+        public bool Equals(T x, T y) => _equalsFx(x, y);
 
-        public int GetHashCode(T obj)
-        {
-            return _hashFunction(obj);
-        }
+        public int GetHashCode(T obj) => _getHashCodeFx(obj);
     }
 }
